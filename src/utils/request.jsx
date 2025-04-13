@@ -3,9 +3,13 @@
 const api = import.meta.env.VITE_API_URL;
 
 const getAuthHeaders = () => {
-    const token = localStorage.getItem("accessToken"); // Hoặc sessionStorage.getItem("token")
+    const token = localStorage.getItem("accessToken");
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
+
+const isPublicEnpoint = (path) => {
+    return ["auth/login", "auth/register", "cities", "auth/sendEmail"].find(item => item == path);
+}
 
 export const refreshToken = async (path) => {
 
@@ -67,7 +71,7 @@ export const get = async (path) => {
     const res = await fetch(`${api}${path}`, {
         credentials: "include",
         headers: {
-            ...getAuthHeaders(),
+            ...(isPublicEnpoint(path) ? {} : getAuthHeaders()),
         },
     });
     const data = await res.json();
@@ -76,12 +80,16 @@ export const get = async (path) => {
 
 export const post = async (path, newData) => {
     const isFormData = newData instanceof FormData;
+    const headers = {
+        // Nếu không phải endpoint công khai thì thêm Authorization
+        ...(isPublicEnpoint(path) ? {} : getAuthHeaders()),
+        // Nếu không phải FormData thì cần set Content-Type
+        ...(!isFormData && { "Content-Type": "application/json" })
+    };
     const res = await fetch(`${api}${path}`, {
         method: "POST",
         credentials: "include",
-        headers: isFormData ? undefined : {
-            "Content-Type": "application/json",
-        },
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
         body: isFormData ? newData : JSON.stringify(newData)
     });
     const data = await res.json();
@@ -107,6 +115,7 @@ export const patch = async (path, item) => {
     const res = await fetch(`${api}${path}`, {
         method: "PATCH",
         headers: isObject ? undefined : {
+            ...getAuthHeaders(),
             "Content-Type": "application/json"
         },
         credentials: "include",

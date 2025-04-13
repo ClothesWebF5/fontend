@@ -1,4 +1,4 @@
-import { get } from "../../utils/request";
+import { get, post, patch } from "../../utils/request";
 import { config } from "../../config/index.config"
 
 export const listRole = async () => {
@@ -20,3 +20,8 @@ export const listRole = async () => {
 //     const res = await del(`${config.prefixAdmin}/role/delete`, id);
 //     return res;
 // }
+
+export const updatePermission = async (data) => {
+    const res = await patch (`admin/permissions`, data);
+    return res;
+}

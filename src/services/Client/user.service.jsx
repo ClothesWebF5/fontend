@@ -10,7 +10,17 @@ export const login = async (data) => {
     return res;
 }
 
-export const register = async(data) => {
-    const res = await post("register", data);
+export const sendEmail = async(data) => {
+    const res = await post("auth/sendEmail", data);
+    return res;
+}
+
+export const getCity = async () => {
+    const res = await get("cities");
+    return res;
+}
+
+export const register = async (data) => {
+    const res = await post("auth/register", data);
     return res;
 }

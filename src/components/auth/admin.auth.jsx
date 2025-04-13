@@ -7,7 +7,7 @@ const AdminRoute  = () => {
         return <Navigate to = "/login" replace/>
     }else {
         const role = jwtDecode(access_token).scope.split(" ")[0];
-        if(role != "ROLE_ADMIN"){
+        if(role == "ROLE_USER"){
             localStorage.removeItem("accessToken");
             return <Navigate to = "/login" replace/>
         }

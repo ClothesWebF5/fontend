@@ -7,7 +7,7 @@ import { useState } from "react";
 import { login } from "../../../services/Client/user.service";
 import { notification } from "../../../helpers/toast";
 
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 function Login() {
     const navigate = useNavigate();
@@ -16,7 +16,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const patternEmail = /^[A-Za-z0-9]+@[A-Za-z0-9]+\.(com|vn)$/;
     const patternPassword = /(?=.*\d)(?=.*\W)(?=.*[A-Z]).{8,}/;
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         // if (!email.trim()) {
@@ -28,24 +28,24 @@ function Login() {
         // } else if (!patternPassword.test(password)) {
         //     notification(toast, "Mật khẩu tối thiểu 8 ký tự (ít nhất 1 chữ hoa, 1 số và 1 ký tự đặc biệt)!");        
         // } else {
-            
+
         // }
 
         const res = await login({ email, password });
         if (res.status === 200) {
             localStorage.setItem("accessToken", res.data.result.token);
             const scope = jwtDecode(res.data.result.token).scope;
-            const isAdmin = scope.split(" ").includes("ROLE_ADMIN");
-            if(isAdmin){
-                navigate("/admin/dashboard");
-            } else {
+            const isUser = scope.split(" ").includes("ROLE_USER");
+            if (isUser) {
                 navigate("/user/infor");
+            } else {
+                navigate("/admin/dashboard");
             }
         } else {
-            notification(toast, res.data.message);        
+            notification(toast, res.data.message);
         }
     }
-    
+
     return (
         <>
             <ToastContainer
@@ -58,28 +58,28 @@ function Login() {
                     <h1 className="text-center text-2xl font-bold mb-6">Login</h1>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4 relative">
-                            <input 
-                                type="text" 
-                                placeholder="Username" 
-                                className="w-full p-3 pl-10 bg-[rgba(255,255,255,0.3)] rounded-full focus:outline-none placeholder:text-white focus:placeholder:opacity-25" 
-                                onChange={(e) => setEmail(e.target.value)} 
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                className="w-full p-3 pl-10 bg-[rgba(255,255,255,0.3)] rounded-full focus:outline-none placeholder:text-white focus:placeholder:opacity-25"
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                             <span className="absolute left-4 top-[50%] translate-y-[-50%]">
                                 <FontAwesomeIcon icon={faUser} />
                             </span>
                         </div>
                         <div className="mb-4 relative">
-                            <input 
-                                type={showPassword ? "text" : "password"} 
+                            <input
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Password"
                                 className="w-full p-3 pl-10 pr-10 bg-[rgba(255,255,255,0.3)] rounded-full focus:outline-none placeholder:text-white focus:placeholder:opacity-25"
-                                onChange={(e) => setPassword(e.target.value)} 
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                             <span className="absolute left-4 top-[50%] translate-y-[-50%]">
                                 <FontAwesomeIcon icon={faLock} />
                             </span>
-                            <span 
-                                className="absolute right-4 top-[50%] translate-y-[-50%] cursor-pointer" 
+                            <span
+                                className="absolute right-4 top-[50%] translate-y-[-50%] cursor-pointer"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
@@ -92,8 +92,8 @@ function Login() {
                             </label>
                             <Link className="text-sm hover:underline" to={"/forgot"}>Forgot password</Link>
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="w-full p-3 bg-gradient-to-r from-[#2a5298] to-[#1e3c72] 
                                 text-white rounded-full font-medium hover:from-[#3ec1d3] 
                                 hover:to-[#2a5298] transition-all duration-300 shadow-md 

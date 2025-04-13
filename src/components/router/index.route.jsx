@@ -9,6 +9,7 @@ import Auth from "../auth/index.auth.jsx";
 import AdminRoute from "../auth/admin.auth.jsx";
 import ListRole from "../../view/admin/role/index.role.jsx";
 import Permission from "../../view/admin/role/permission.role.jsx";
+import Forbidden403 from "../error/unauthorized.error.jsx";
 export const router = [
     {
         path: "/login",
@@ -93,6 +94,10 @@ export const router = [
     {
         path: "*",
         element: <Error />
+    },
+    {
+        path: "/unauthorized",
+        element: <Forbidden403 />
     }
 ];
 export default router;
