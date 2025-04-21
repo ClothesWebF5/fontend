@@ -99,7 +99,6 @@ function Register() {
         const patternPassword = /(?=.*\d)(?=.*\W)(?=.*[A-Z]).{8,}/;
         const patternPhone = /^0[0-9]{9}$/;
         e.preventDefault();
-        console.log(dataForm);
         if (!dataForm?.name?.trim()) {
             notification(toast, "Vui lòng nhập họ và tên!");
         } else if (!patternPhone.test(dataForm.phone)) {
@@ -128,7 +127,7 @@ function Register() {
                     setShowOtpModal(true);
                     notification(toast, "Đã gửi OTP, vui lòng kiểm tra email!", "success");
                 } else {
-                    notification(toast, "Gửi email thất bại!");
+                    notification(toast, "Email đã tồn tại hoặc gửi email thất bại!");
                 }
             } catch (error) {
                 notification(toast, "Đã có lỗi xảy ra khi gửi email!");

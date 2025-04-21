@@ -10,6 +10,9 @@ import AdminRoute from "../auth/admin.auth.jsx";
 import ListRole from "../../view/admin/role/index.role.jsx";
 import Permission from "../../view/admin/role/permission.role.jsx";
 import Forbidden403 from "../error/unauthorized.error.jsx";
+import ListCategory from "../../view/admin/category/index.category.jsx";
+import CreateProduct from "../../view/admin/product/create.product.jsx";
+import AdminProductList from "../../view/admin/product/index.product.jsx";
 export const router = [
     {
         path: "/login",
@@ -65,11 +68,7 @@ export const router = [
                     },
                     {
                         path: "products",
-                        element: <h1 className="title">Products</h1>,
-                    },
-                    {
-                        path: "new-product",
-                        element: <h1 className="title">New Product</h1>,
+                        element: <AdminProductList/>
                     },
                     {
                         path: "inventory",
@@ -84,8 +83,16 @@ export const router = [
                         element: <Permission />
                     },
                     {
+                        path: "categories",
+                        element: <ListCategory />
+                    },
+                    {
                         path: "settings",
                         element: <h1 className="title">Settings</h1>,
+                    },
+                    {
+                        path: "new-product",
+                        element: <CreateProduct />
                     },
                 ],
             },

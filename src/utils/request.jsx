@@ -8,7 +8,7 @@ const getAuthHeaders = () => {
 };
 
 const isPublicEnpoint = (path) => {
-    return ["auth/login", "auth/register", "cities", "auth/sendEmail"].find(item => item == path);
+    return ["auth/login", "auth/register", "cities", "auth/sendEmail", "api/common/colors", "api/common/sizes"].find(item => item == path);
 }
 
 export const refreshToken = async (path) => {

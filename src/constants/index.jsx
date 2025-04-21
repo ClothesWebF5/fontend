@@ -1,4 +1,4 @@
-import { ChartColumn, Home, NotepadText, Package, PackagePlus, Settings, ShoppingBag, UserCheck, UserPlus, Users } from "lucide-react";
+import { Boxes, ChartColumn, CirclePlus, Folder, Home, KeyRound, NotepadText, Package, PackagePlus, Settings, ShieldCheck, ShoppingBag, UserCheck, UserPlus, Users } from "lucide-react";
 import {config} from "../config/index.config";
 import ProfileImage from "@/assets/profile-image.jpg";
 import ProductImage from "@/assets/product-image.jpg";
@@ -45,6 +45,16 @@ export const navbarLinks = [
         ],
     },
     {
+        title: "Categories",
+        links: [
+            {
+                label: "Categories",
+                icon: Folder,
+                path: `${config.prefixAdmin}/categories`,
+            }
+        ],
+    },
+    {
         title: "Products",
         links: [
             {
@@ -54,12 +64,12 @@ export const navbarLinks = [
             },
             {
                 label: "New product",
-                icon: PackagePlus,
-                path: "/new-product",
+                icon: CirclePlus,
+                path: `${config.prefixAdmin}/new-product`,
             },
             {
                 label: "Inventory",
-                icon: ShoppingBag,
+                icon: Boxes,
                 path: "/inventory",
             },
         ],
@@ -69,12 +79,12 @@ export const navbarLinks = [
         links: [
             {
                 label: "List role",
-                icon: Package,
+                icon: ShieldCheck,
                 path: `${config.prefixAdmin}/roles`,
             },
             {
                 label: "Permissions",
-                icon: PackagePlus,
+                icon: KeyRound,
                 path:  `${config.prefixAdmin}/permissions`,
             }
         ],
@@ -90,6 +100,7 @@ export const navbarLinks = [
         ],
     },
 ];
+
 
 export const overviewData = [
     {
@@ -286,3 +297,32 @@ export const topProducts = [
         rating: 4.5,
     },
 ];
+
+
+const mockProducts = [
+    {
+      product_id: 1,
+      name: "Áo thun thể thao",
+      image: "http://res.cloudinary.com/dxx1lgamz/image/upload/4b3fb84e-760e-4a22-902f-47a64e924f3d_anh6",
+      category: "Thời trang nam",
+      price: 250000,
+      discount: 10,
+      stock: 50,
+      sold_count: 20,
+      deleted: false,
+      promotions: [
+        {
+          percent: 10,
+          start_date: "2024-04-01",
+          end_date: "2024-04-20",
+        },
+        {
+          percent: 5,
+          start_date: "2024-03-01",
+          end_date: "2024-03-10",
+        },
+      ],
+    },
+  ];
+  
+  export default mockProducts;
