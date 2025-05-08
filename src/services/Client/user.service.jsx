@@ -24,3 +24,13 @@ export const register = async (data) => {
     const res = await post("auth/register", data);
     return res;
 }
+
+export const withGoogleOrFacebook = async (type) => {
+    const res = await get(`auth/social-login?type=${type}`);
+    return res;
+}
+
+export const sendCode = async (type, code) => {
+    const res = await get(`auth/login/${type}?code=${code}`);
+    return res;
+}

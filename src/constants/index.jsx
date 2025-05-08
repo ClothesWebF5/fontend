@@ -323,6 +323,52 @@ const mockProducts = [
         },
       ],
     },
+    {
+      product_id: 1,
+      name: "Áo thun thể thao",
+      image: "http://res.cloudinary.com/dxx1lgamz/image/upload/4b3fb84e-760e-4a22-902f-47a64e924f3d_anh6",
+      category: "Thời trang nam",
+      price: 250000,
+      discount: 10,
+      stock: 50,
+      sold_count: 20,
+      deleted: false,
+      promotions: [
+        {
+          percent: 10,
+          start_date: "2024-04-01",
+          end_date: "2024-04-20",
+        },
+        {
+          percent: 5,
+          start_date: "2024-03-01",
+          end_date: "2024-03-10",
+        },
+      ],
+    },
+    {
+      product_id: 1,
+      name: "Áo thun thể thao",
+      image: "http://res.cloudinary.com/dxx1lgamz/image/upload/4b3fb84e-760e-4a22-902f-47a64e924f3d_anh6",
+      category: "Thời trang nam",
+      price: 250000,
+      discount: 10,
+      stock: 50,
+      sold_count: 20,
+      deleted: false,
+      promotions: [
+        {
+          percent: 10,
+          start_date: "2024-04-01",
+          end_date: "2024-04-20",
+        },
+        {
+          percent: 5,
+          start_date: "2024-03-01",
+          end_date: "2024-03-10",
+        },
+      ],
+    }
   ];
   
   export default mockProducts;

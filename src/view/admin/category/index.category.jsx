@@ -71,7 +71,7 @@ function ListCategory() {
             {/* Modal thêm danh mục cha */}
             {isModalOpen && (
                 <CreateCategory
-                    categoryId={null} // null để hiểu là thêm danh mục cha
+                    categoryId={0} // null để hiểu là thêm danh mục cha
                     reload={reload}
                     onClose={handleCloseModal}
                     parentCategoryName="(Gốc)"

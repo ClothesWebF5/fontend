@@ -13,6 +13,8 @@ import Forbidden403 from "../error/unauthorized.error.jsx";
 import ListCategory from "../../view/admin/category/index.category.jsx";
 import CreateProduct from "../../view/admin/product/create.product.jsx";
 import AdminProductList from "../../view/admin/product/index.product.jsx";
+import UpdateProduct from "../../view/admin/product/update.product.jsx";
+import OAuth2Callback from "../../view/client/user/OAuth2Callback.jsx";
 export const router = [
     {
         path: "/login",
@@ -37,66 +39,80 @@ export const router = [
     },
     {
         path: "/admin",
-        element: <AdminRoute />, 
+        element: <AdminRoute />,
         children: [
             {
-                element: <Layout />,
+                element: <Auth />,
                 children: [
                     {
-                        path: "dashboard",
-                        element: <DashboardPage />,
-                    },
-                    {
-                        path: "analytics",
-                        element: <h1 className="title">Analytics</h1>,
-                    },
-                    {
-                        path: "reports",
-                        element: <h1 className="title">Reports</h1>,
-                    },
-                    {
-                        path: "customers",
-                        element: <h1 className="title">Customers</h1>,
-                    },
-                    {
-                        path: "new-customer",
-                        element: <h1 className="title">New Customer</h1>,
-                    },
-                    {
-                        path: "verified-customers",
-                        element: <h1 className="title">Verified Customers</h1>,
-                    },
-                    {
-                        path: "products",
-                        element: <AdminProductList/>
-                    },
-                    {
-                        path: "inventory",
-                        element: <h1 className="title">Inventory</h1>,
-                    },
-                    {
-                        path: "roles",
-                        element: <ListRole />
-                    },
-                    {
-                        path: "permissions",
-                        element: <Permission />
-                    },
-                    {
-                        path: "categories",
-                        element: <ListCategory />
-                    },
-                    {
-                        path: "settings",
-                        element: <h1 className="title">Settings</h1>,
-                    },
-                    {
-                        path: "new-product",
-                        element: <CreateProduct />
-                    },
-                ],
+                        element: <Layout />,
+                        children: [
+                            {
+                                path: "dashboard",
+                                element: <DashboardPage />,
+                            },
+                            {
+                                path: "analytics",
+                                element: <h1 className="title">Analytics</h1>,
+                            },
+                            {
+                                path: "reports",
+                                element: <h1 className="title">Reports</h1>,
+                            },
+                            {
+                                path: "customers",
+                                element: <h1 className="title">Customers</h1>,
+                            },
+                            {
+                                path: "new-customer",
+                                element: <h1 className="title">New Customer</h1>,
+                            },
+                            {
+                                path: "verified-customers",
+                                element: <h1 className="title">Verified Customers</h1>,
+                            },
+                            {
+                                path: "products",
+                                element: <AdminProductList />
+                            },
+                            {
+                                path: "products/:id",
+                                element: <UpdateProduct />
+                            },
+                            {
+                                path: "inventory",
+                                element: <h1 className="title">Inventory</h1>,
+                            },
+                            {
+                                path: "roles",
+                                element: <ListRole />
+                            },
+                            {
+                                path: "permissions",
+                                element: <Permission />
+                            },
+                            {
+                                path: "categories",
+                                element: <ListCategory />
+                            },
+                            {
+                                path: "settings",
+                                element: <h1 className="title">Settings</h1>,
+                            },
+                            {
+                                path: "new-product",
+                                element: <CreateProduct />
+                            },
+                        ],
+                    }
+                ]
             },
+
         ],
+    },
+    {
+        path: "/oauth2/callback/:type",
+        element: <OAuth2Callback />
     },
     {
         path: "*",

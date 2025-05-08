@@ -102,6 +102,7 @@ const PermissionRole = () => {
       });
 
       const res = await updatePermission(result);
+      console.log(res);
       if (res.status === 200) {
         notification(toast, "Cập nhật thành công", "success");
       } else {

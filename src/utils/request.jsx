@@ -8,7 +8,7 @@ const getAuthHeaders = () => {
 };
 
 const isPublicEnpoint = (path) => {
-    return ["auth/login", "auth/register", "cities", "auth/sendEmail", "api/common/colors", "api/common/sizes"].find(item => item == path);
+    return ["auth/login", "auth/register", "cities", "auth/sendEmail", "api/common/colors", "api/common/sizes","api/common/products", "auth/social-login", "auth/login/google" ].find(item => path.startsWith(item));
 }
 
 export const refreshToken = async (path) => {
@@ -102,25 +102,41 @@ export const del = async (path, id) => {
         method: "DELETE",
         credentials: "include",
         headers: {
+            ...getAuthHeaders(),
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(id)
+        body: id ? JSON.stringify(id) : null
     });
     const data = await res.json();
     return { status: res.status, data };
 }
 
 export const patch = async (path, item) => {
-    const isObject = item instanceof FormData;
+    // const isObject = item instanceof FormData;
+    // const res = await fetch(`${api}${path}`, {
+    //     method: "PATCH",
+    //     headers: isObject ? undefined : {
+    //         ...getAuthHeaders(),
+    //         "Content-Type": "application/json"
+    //     },
+    //     credentials: "include",
+    //     body: isObject ? item : JSON.stringify(item)
+    // });
+    // const data = await res.json();
+    // return {status: res.status, data};
+    const isFormData = item instanceof FormData;
+    const headers = {
+        // Nếu không phải endpoint công khai thì thêm Authorization
+        ...(isPublicEnpoint(path) ? {} : getAuthHeaders()),
+        // Nếu không phải FormData thì cần set Content-Type
+        ...(!isFormData && { "Content-Type": "application/json" })
+    };
     const res = await fetch(`${api}${path}`, {
         method: "PATCH",
-        headers: isObject ? undefined : {
-            ...getAuthHeaders(),
-            "Content-Type": "application/json"
-        },
         credentials: "include",
-        body: isObject ? item : JSON.stringify(item)
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
+        body: isFormData ? item : JSON.stringify(item)
     });
     const data = await res.json();
-    return {status: res.status, data};
+    return { status: res.status, data };
 }

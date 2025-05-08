@@ -9,3 +9,8 @@ export const getSizes = async () => {
     const res = await get("api/common/sizes");
     return res;
 }
+
+export const getProducts = async () => {
+    const res = await get("api/common/products");
+    return res;
+}

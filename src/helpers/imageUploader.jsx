@@ -1,7 +1,14 @@
 import { useEffect, useRef } from "react";
 import { FileUploadWithPreview } from "file-upload-with-preview";
 
-function ImageUploader({ onFilesSelected, resetTrigger }) {
+// 👇 Convert 1 URL thành File object
+async function urlToFile(url, filename, mimeType) {
+    const res = await fetch(url);
+    const buf = await res.arrayBuffer();
+    return new File([buf], filename, { type: mimeType });
+}
+
+function ImageUploader({ onFilesSelected, resetTrigger, initialImages = [] }) {
     const uploadRef = useRef(null);
     const uploadId = "my-unique-id";
 
@@ -21,7 +28,7 @@ function ImageUploader({ onFilesSelected, resetTrigger }) {
             });
 
             const fileInput = document.querySelector(
-                '.custom-file-container input[type="file"]'
+                `.custom-file-container[data-upload-id="${uploadId}"] input[type="file"]`
             );
 
             if (fileInput) {
@@ -33,14 +40,47 @@ function ImageUploader({ onFilesSelected, resetTrigger }) {
                 });
             }
         }
-
-        // Cleanup không cần thiết ở đây nếu không destroy instance
     }, [onFilesSelected]);
 
-    // ✅ Reset lại khi resetTrigger thay đổi
+    useEffect(() => {
+        async function addInitialImages() {
+            if (initialImages.length > 0 && uploadRef.current) {
+                uploadRef.current.resetPreviewPanel();
+
+                const fileInput = document.querySelector(
+                    `.custom-file-container[data-upload-id="${uploadId}"] input[type="file"]`
+                );
+
+                if (!fileInput) return;
+
+                const fileList = await Promise.all(
+                    initialImages.map(async (url, index) => {
+                        // 👇 Giả lập File từ URL
+                        const file = await urlToFile(url, `image-${index}.jpg`, "image/jpeg");
+                        return file;
+                    })
+                );
+
+                // 👉 Trick: tạo 1 DataTransfer để thêm file vào input
+                const dataTransfer = new DataTransfer();
+                fileList.forEach(file => {
+                    dataTransfer.items.add(file);
+                });
+
+                fileInput.files = dataTransfer.files;
+
+                // 👉 Gọi sự kiện change để trigger thư viện
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        }
+
+        addInitialImages();
+    }, [initialImages]);
+
     useEffect(() => {
         if (uploadRef.current) {
-            uploadRef.current.resetPreviewPanel(); // 💥 dùng cái này thay vì `.reset()`
+            uploadRef.current.resetPreviewPanel();
         }
     }, [resetTrigger]);
 
