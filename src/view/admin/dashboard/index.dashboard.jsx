@@ -7,10 +7,12 @@ import { overviewData, recentSalesData, topProducts } from "../../../constants";
 import { Footer } from "../../../components/layout/admin/footer/footer.admin";
 
 import { CreditCard, DollarSign, Package, PencilLine, Star, Trash, TrendingUp, Users } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const DashboardPage = () => {
     const { theme } = useTheme();
-
+    const profile = useSelector(state => state.infor);
+    console.log(profile);
     return (
         <div className="flex flex-col gap-y-4">
             <h1 className="title">Dashboard</h1>

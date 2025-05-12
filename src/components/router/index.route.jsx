@@ -15,6 +15,7 @@ import CreateProduct from "../../view/admin/product/create.product.jsx";
 import AdminProductList from "../../view/admin/product/index.product.jsx";
 import UpdateProduct from "../../view/admin/product/update.product.jsx";
 import OAuth2Callback from "../../view/client/user/OAuth2Callback.jsx";
+import ListAccount from "../../view/admin/account/index.account.jsx";
 export const router = [
     {
         path: "/login",
@@ -60,8 +61,8 @@ export const router = [
                                 element: <h1 className="title">Reports</h1>,
                             },
                             {
-                                path: "customers",
-                                element: <h1 className="title">Customers</h1>,
+                                path: "accounts",
+                                element: <ListAccount />
                             },
                             {
                                 path: "new-customer",

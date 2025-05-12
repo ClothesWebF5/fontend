@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import ImageUploader from "../../../helpers/imageUploader";
-import { getProductById, updateProduct } from "../../../services/admin/product.service";
-import { listCategory } from "../../../services/admin/category.service";
-import { getColors, getSizes } from "../../../services/common/common.service";
-import TreeCategory from "../../../helpers/treeCategory.admin";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { notification } from "../../../helpers/toast";
-import slugify from "slugify";
-import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
-
+import { ToastContainer, toast } from "react-toastify";
+import slugify from "slugify";
+import ImageUploader from "../../../helpers/imageUploader";
+import { notification } from "../../../helpers/toast";
+import TreeCategory from "../../../helpers/treeCategory.admin";
+import { ListCategory } from "../../../hooks/listCategory";
+import { getProductById, updateProduct } from "../../../services/admin/product.service";
+import { getColors, getSizes } from "../../../services/common/common.service";
 function UpdateProduct() {
     const { id } = useParams();
     const [dataForm, setDataForm] = useState({
@@ -26,7 +25,7 @@ function UpdateProduct() {
     const [initialImages, setInitialImages] = useState([]);
     const [colors, setColors] = useState([]);
     const [sizes, setSizes] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const { categories } = ListCategory();
     const [variants, setVariants] = useState([{ colorId: "", sizeId: "", stock: 0 }]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -34,13 +33,11 @@ function UpdateProduct() {
         const fetchAll = async () => {
             setIsLoading(true);
             try {
-                const [catRes, colorRes, sizeRes, productRes] = await Promise.all([
-                    listCategory(),
+                const [colorRes, sizeRes, productRes] = await Promise.all([
                     getColors(),
                     getSizes(),
                     getProductById(id)
                 ]);
-                setCategories(catRes.data.result);
                 setColors(colorRes.data.result);
                 setSizes(sizeRes.data.result);
                 const product = productRes.data.result;

@@ -7,12 +7,16 @@ import { useState } from "react";
 import { login, withGoogleOrFacebook } from "../../../services/Client/user.service";
 import { notification } from "../../../helpers/toast";
 import { jwtDecode } from "jwt-decode";
+import { getProfile } from "../../../services/auth/auth.service";
+import { useDispatch } from "react-redux";
+import { infor as profile } from "../../../components/action/infor.action";
 
 function Login() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
 
     const loginWithProvider = async (type) => {
         try {
@@ -36,11 +40,20 @@ function Login() {
         } else {
             const res = await login({ email, password });
             if (res.status === 200) {
-                localStorage.setItem("accessToken", res.data.result.token);
-                const scope = jwtDecode(res.data.result.token).scope;
-                const isUser = scope.split(" ").includes("ROLE_USER");
-                if (isUser) navigate("/user/infor");
-                else navigate("/admin/dashboard");
+                const token = res.data.result.token;
+                localStorage.setItem("accessToken", token);
+                const infor = await getProfile();
+                if (infor.status == 200) {
+                    localStorage.setItem("profile", JSON.stringify(infor.data.result));
+                    dispatch(profile(infor.data.result));
+                    const scope = jwtDecode(token).scope;
+                    const isUser = scope.split(" ").includes("ROLE_USER");
+                    if (isUser) navigate("/user/infor");
+                    else navigate("/admin/dashboard");
+                } else {
+                    notification(toast, "Không lấy được thông tin người dùng");
+                    navigate("/login");
+                }
             } else {
                 notification(toast, res.data.message);
             }

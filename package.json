@@ -16,6 +16,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@radix-ui/react-popover": "^1.1.13",
     "@uidotdev/usehooks": "^2.4.1",
     "antd": "^5.24.8",
     "clsx": "^2.1.1",

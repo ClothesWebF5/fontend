@@ -34,3 +34,8 @@ export const sendCode = async (type, code) => {
     const res = await get(`auth/login/${type}?code=${code}`);
     return res;
 }
+
+export const logout = async () => {
+    const res = await get(`auth/logout`);
+    return res;
+}

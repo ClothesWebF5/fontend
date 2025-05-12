@@ -9,6 +9,7 @@ import "react-quill/dist/quill.snow.css";
 import { notification } from "../../../helpers/toast";
 import slugify from "slugify";
 import { ToastContainer, toast } from "react-toastify";
+import { ListCategory } from "../../../hooks/listCategory";
 
 function CreateProduct() {
     const [dataForm, setDataForm] = useState({});
@@ -18,20 +19,18 @@ function CreateProduct() {
 
     const [colors, setColors] = useState([]);
     const [sizes, setSizes] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [variants, setVariants] = useState([
         { colorId: "", sizeId: "", stock: 0 }
     ]);
 
+    const { categories } = ListCategory();
     useEffect(() => {
         const fetchAll = async () => {
             try {
-                const [catRes, colorRes, sizeRes] = await Promise.all([
-                    listCategory(),
+                const [colorRes, sizeRes] = await Promise.all([
                     getColors(),
                     getSizes()
                 ]);
-                setCategories(catRes.data.result);
                 setColors(colorRes.data.result);
                 setSizes(sizeRes.data.result);
             } catch (err) {

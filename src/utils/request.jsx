@@ -67,12 +67,13 @@ export const verifyToken = async (path, token) => {
     return { status: res.status, data };
 };
 
-export const get = async (path) => {
+export const get = async (path, token) => {
     const res = await fetch(`${api}${path}`, {
         credentials: "include",
         headers: {
             ...(isPublicEnpoint(path) ? {} : getAuthHeaders()),
         },
+        body: token ? JSON.stringify(token) : null
     });
     const data = await res.json();
     return {status: res.status, data};

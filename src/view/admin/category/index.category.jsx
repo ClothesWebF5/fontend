@@ -1,27 +1,12 @@
 import { useEffect, useState } from "react";
-import { listCategory } from "../../../services/admin/category.service";
-import CategoryRow from "../../../helpers/categoryRow";
 import { ToastContainer } from "react-toastify";
+import CategoryRow from "../../../helpers/categoryRow";
+import { ListCategory as ListCategories } from "../../../hooks/listCategory";
 import CreateCategory from "./create.category"; // import thêm
 
 function ListCategory() {
-    const [categories, setCategories] = useState([]);
+    const { categories, reload }= ListCategories();
     const [isModalOpen, setIsModalOpen] = useState(false); // Thêm state modal
-
-    const fetchApi = async () => {
-        const res = await listCategory();
-        if (res && res.data.result) {
-            setCategories(res.data.result);
-        }
-    };
-
-    const reload = () => {
-        fetchApi();
-    };
-
-    useEffect(() => {
-        fetchApi();
-    }, []);
 
     const handleOpenModal = () => {
         setIsModalOpen(true);

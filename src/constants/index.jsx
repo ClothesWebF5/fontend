@@ -3,6 +3,8 @@ import {config} from "../config/index.config";
 import ProfileImage from "@/assets/profile-image.jpg";
 import ProductImage from "@/assets/product-image.jpg";
 
+export const prefixAdmin = "api/admin";
+
 export const navbarLinks = [
     {
         title: "Dashboard",
@@ -25,23 +27,13 @@ export const navbarLinks = [
         ],
     },
     {
-        title: "Customers",
+        title: "Accounts",
         links: [
             {
-                label: "Customers",
+                label: "Accounts",
                 icon: Users,
-                path: `${config.prefixAdmin}/customers`,
-            },
-            {
-                label: "New customer",
-                icon: UserPlus,
-                path: `${config.prefixAdmin}/new-user`,
-            },
-            {
-                label: "Verified customers",
-                icon: UserCheck,
-                path: "/verified-customers",
-            },
+                path: `${config.prefixAdmin}/accounts`,
+            }
         ],
     },
     {
@@ -66,19 +58,14 @@ export const navbarLinks = [
                 label: "New product",
                 icon: CirclePlus,
                 path: `${config.prefixAdmin}/new-product`,
-            },
-            {
-                label: "Inventory",
-                icon: Boxes,
-                path: "/inventory",
-            },
+            }
         ],
     },
     {
         title: "Roles",
         links: [
             {
-                label: "List role",
+                label: "Roles",
                 icon: ShieldCheck,
                 path: `${config.prefixAdmin}/roles`,
             },
