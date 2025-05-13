@@ -111,6 +111,8 @@ function CreateProduct() {
                 setResetImages(prev => !prev); // ✅ đổi trigger để reset ảnh
                 setVariants([{ colorId: "", sizeId: "", stock: 0 }]);
                 setEditorKey(Date.now()); // ✅ reset ReactQuill
+            } else if (res.status == 403) {
+                notification(toast, "Không có quyền thực hiện chức năng này");
             }
         }
     };

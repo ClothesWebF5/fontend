@@ -21,8 +21,10 @@ function UpdateRole({ role, onClose, reload }) {
             notification(toast, "Cập nhật thành công!", "success");
             reload();
             onClose();
+        } else if (res.status) {
+            notification(toast, "Không có quyền thực hiện chức năng này");
         } else {
-            notification(toast, "Cập nhật thất bại!");
+            notification(toast, "Cập nhật thất bại");
         }
     };
 

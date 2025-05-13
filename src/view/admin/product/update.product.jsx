@@ -158,8 +158,8 @@ function UpdateProduct() {
                 setVariants([{ colorId: "", sizeId: "", stock: 0 }]);
                 setInitialImages([]);
                 setImageUploaderKey(Date.now());
-            } else {
-                notification(toast, "Lỗi khi cập nhật sản phẩm", "error");
+            } else if (res.status == 403) {
+                notification(toast, "Không có quyền thực hiện chức năng này");
             }
         } catch (err) {
             notification(toast, "Lỗi khi cập nhật sản phẩm: " + err.message, "error");

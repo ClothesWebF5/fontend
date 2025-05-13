@@ -12,11 +12,11 @@ import { ListRole } from '../../../hooks/listRole';
 
 const { Option } = Select;
 
-const CreateAccount = ({ showModal, handleCloseModal, reload}) => {
+const CreateAccount = ({ showModal, handleCloseModal, reload }) => {
 
     const [fileUpload, setFileUpload] = useState(null);
     const [form] = Form.useForm();
-    const { roles } = ListRole(); 
+    const { roles } = ListRole();
 
     const handleChangeAvatar = (e) => {
         preview(e);
@@ -41,7 +41,9 @@ const CreateAccount = ({ showModal, handleCloseModal, reload}) => {
                     delete_preview();
                     setFileUpload(null);
                     reload();
-                }else {
+                } else if (res.status == 403) {
+                    notification(toast, "Không có quyền thực hiện chức năng này");
+                } else {
                     notification(toast, "Email đã tồn tại");
                 }
             } catch (error) {

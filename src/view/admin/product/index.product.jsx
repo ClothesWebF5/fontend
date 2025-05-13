@@ -1,4 +1,3 @@
-import React from "react";
 import AdminProductTable from "./card.product";
 
 

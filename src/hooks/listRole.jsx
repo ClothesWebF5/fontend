@@ -8,6 +8,8 @@ export const ListRole = () => {
     const res = await listRole();
     if (res.status === 200) {
       setRoles(res.data.result);
+    }else if (res.status === 403){
+      setRoles(null);
     }
   };
   useEffect(() => {

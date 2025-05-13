@@ -36,6 +36,8 @@ function UpdateCategory({ categoryId, reload }) {
                 notification(toast, "Cập nhật danh mục thành công", "success");
                 setIsModalOpen(false);
                 reload();
+            } else if (res.status == 403) {
+                notification(toast, "Không có quyền thực hiện chức năng này");
             }
         } catch (err) {
             notification(toast, "Lỗi khi cập nhật danh mục", "error");

@@ -16,6 +16,8 @@ function CreateCategory({ categoryId, reload, onClose, parentCategoryName }) {
                 onClose();
                 reload();
                 notification(toast, res.data.message, "success");
+            } else if (res.status == 403) {
+                notification(toast, "Không có quyền thực hiện chức năng này");
             }
         }
     };

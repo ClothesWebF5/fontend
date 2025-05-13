@@ -16,6 +16,8 @@ function CreateRole({ onClose, reload }) {
             notification(toast, res.data.message, "success");
             reload();
             onClose();
+        } else if (res.status == 403) {
+             notification(toast, "Không có quyền thực hiện chức năng này");
         } else {
             notification(toast, res.data.message);
         }

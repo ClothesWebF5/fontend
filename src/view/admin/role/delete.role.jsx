@@ -1,5 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { deleteRole } from "../../../services/admin/role.service";
+import { notification } from "../../../helpers/toast";
+import { toast } from "react-toastify";
 
 function DeleteRole({ item, reload, type }) {
 
@@ -7,6 +9,8 @@ function DeleteRole({ item, reload, type }) {
         const res = await deleteRole(id);
         if (res.status == 200) {
             reload();
+        }else if (res.status == 403){
+            notification(toast, "Không có quyền thực hiện chức năng này");
         }
     };
 

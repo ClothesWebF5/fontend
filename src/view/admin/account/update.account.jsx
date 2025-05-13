@@ -21,10 +21,12 @@ function UpdateAccount({ listRoles, reload, item, type = "desktop" }) {
 
     const handleSubmit = async (values) => {
         const res = await updateAccount(item.id, values);
-        if(res.status == 200){
+        if (res.status == 200) {
             notification(toast, res.data.message, "success");
             setShowModal(false);
             reload();
+        } else if (res.status == 403) {
+            notification(toast, "Không có quyền thực hiện chức năng này");
         }
     };
 

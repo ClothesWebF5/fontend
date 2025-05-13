@@ -10,16 +10,18 @@ const PermissionRole = () => {
   const value = [
     ['PRODUCT_VIEW', 'PRODUCT_ADD', 'PRODUCT_UPDATE', 'PRODUCT_DELETE'],
     ['ROLE_VIEW', 'ROLE_ADD', 'ROLE_UPDATE', 'ROLE_DELETE', 'ROLE_PERMISSION'],
-    ['CATEGORY_VIEW', 'CATEGORY_ADD', 'CATEGORY_UPDATE', 'CATEGORY_DELETE']
+    ['CATEGORY_VIEW', 'CATEGORY_ADD', 'CATEGORY_UPDATE', 'CATEGORY_DELETE'],
+    ['ACCOUNT_VIEW', 'ACCOUNT_ADD', 'ACCOUNT_UPDATE', 'ACCOUNT_DELETE']
   ];
 
   const title = [
     ['Xem', 'Thêm', 'Sửa', 'Xóa'],
     ['Xem', 'Thêm', 'Sửa', 'Xóa', 'Phân quyền'],
+    ['Xem', 'Thêm', 'Sửa', 'Xóa'],
     ['Xem', 'Thêm', 'Sửa', 'Xóa']
   ];
 
-  const featureNames = ['Sản phẩm', 'Nhóm quyền', 'Danh mục'];
+  const featureNames = ['Sản phẩm', 'Nhóm quyền', 'Danh mục', "Tài khoản"];
 
   const [permissionsData, setPermissionsData] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -63,8 +65,6 @@ const PermissionRole = () => {
             };
           });
           setPermissionsData(generatedPermissions);
-        } else {
-          navigate("/unauthorized");
         }
       } catch (error) {
         console.error('Lỗi khi fetch dữ liệu role:', error);
@@ -102,11 +102,12 @@ const PermissionRole = () => {
           permissions: [...new Set(selectedPermissions)]
         };
       });
-
+      console.log(result);
       const res = await updatePermission(result);
-      console.log(res);
       if (res.status === 200) {
         notification(toast, "Cập nhật thành công", "success");
+      } else if (res.status === 403) {
+         notification(toast, "Không có quyền thực hiện chức năng này");
       } else {
         notification(toast, "Cập nhật thất bại");
       }

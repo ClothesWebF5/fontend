@@ -8,6 +8,8 @@ export const ListCategory = () => {
         const res = await listCategory();
         if (res.status === 200) {
             setCategories(res.data.result);
+        }else if (res.status === 403){
+            setCategories(null);
         }
     };
 
