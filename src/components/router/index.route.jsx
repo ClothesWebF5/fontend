@@ -9,12 +9,13 @@ import ListRole from "../../view/admin/role/index.role.jsx";
 import Permission from "../../view/admin/role/permission.role.jsx";
 import Home from "../../view/client/home/index.home.jsx";
 import Infor from "../../view/client/user/infor.jsx";
-import Login from "../../view/client/user/login.jsx";
-import OAuth2Callback from "../../view/client/user/OAuth2Callback.jsx";
-import Register from "../../view/client/user/register.jsx";
+import Register from "../../view/auth/register.jsx"
 import AdminRoute from "../auth/admin.auth.jsx";
 import Forbidden403 from "../error/unauthorized.error.jsx";
 import Layout from "../layout/admin/index.layout";
+import Login from "../../view/auth/login.jsx";
+import OAuth2Callback from "../../view/auth/OAuth2Callback.jsx";
+import LayoutUser from "../../components/layout/client/index.layout.jsx";
 export const router = [
     {
         path: "/login",
@@ -25,12 +26,18 @@ export const router = [
         element: <Register />
     },
     {
-        index: true,
-        element: <Home />
-    },
-    {
-        path: "user/infor",
-        element: <Infor />
+        path: "/",
+        element: <LayoutUser />,
+        children: [
+            {
+                index: true,
+                element: <Home />
+            },
+            {
+                path: "user/infor",
+                element: <Infor />
+            },
+        ]
     },
     {
         path: "/admin",
@@ -40,7 +47,7 @@ export const router = [
                 element: <Layout />,
                 children: [
 
-                    {   
+                    {
                         path: "dashboard",
                         element: <DashboardPage />,
                     },

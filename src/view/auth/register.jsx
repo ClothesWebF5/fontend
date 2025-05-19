@@ -1,10 +1,10 @@
 import { faCircleMinus, faClipboardCheck, faEnvelope, faEye, faEyeSlash, faImage, faLock, faPhone, faUser, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { delete_preview, preview } from "../../../helpers/preview_avatar";
+import { delete_preview, preview } from "../../helpers/preview_avatar";
 import { useEffect, useState } from "react";
-import { sendEmail, register } from "../../../services/Client/user.service";
+import { sendEmail, register } from "../../services/Client/user.service";
 import { ToastContainer, toast } from 'react-toastify';
-import { notification } from "../../../helpers/toast";
+import { notification } from "../../helpers/toast";
 import { useNavigate } from "react-router-dom";
 
 function Register() {

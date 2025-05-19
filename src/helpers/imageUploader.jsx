@@ -15,7 +15,7 @@ function ImageUploader({ onFilesSelected, resetTrigger, initialImages = [] }) {
     useEffect(() => {
         if (!uploadRef.current) {
             uploadRef.current = new FileUploadWithPreview(uploadId, {
-                maxFileCount: 12,
+                maxFileCount: 50,
                 multiple: true,
                 text: {
                     chooseFile: "Chọn ảnh...",

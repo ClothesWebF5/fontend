@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { sendCode } from "../../../services/Client/user.service";
-import { notification } from "../../../helpers/toast";
+import { sendCode } from "../../services/Client/user.service";
+import { notification } from "../../helpers/toast";
 import { jwtDecode } from "jwt-decode";
-import { getProfile } from "../../../services/auth/auth.service";
+import { getProfile } from "../../services/auth/auth.service";
 import { useDispatch } from "react-redux";
-import { infor as profile } from "../../../components/action/infor.action";
+import { infor as profile } from "../../components/action/infor.action";
 
 function OAuth2Callback() {
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ function OAuth2Callback() {
                         dispatch(profile(infor.data.result));
                         const scope = jwtDecode(token).scope;
                         const isUser = scope.split(" ").includes("ROLE_USER");
-                        if (isUser) navigate("/user/infor");
+                        if (isUser) navigate("/");
                         else navigate("/admin/dashboard");
                     } else {
                         notification(toast, "Không lấy được thông tin người dùng");

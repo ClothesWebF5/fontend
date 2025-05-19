@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, Select, Upload, Button, message } from 'antd';
-import { UploadOutlined, UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
-import { faCircleMinus, faClipboardCheck, faEnvelope, faEye, faEyeSlash, faImage, faLock, faPhone, faUser, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import { faCircleMinus, faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { delete_preview, preview } from '../../../helpers/preview_avatar';
-import { listRole } from "../../../services/admin/role.service";
-import { notification } from '../../../helpers/toast';
+import { Button, Form, Input, Modal, Select } from 'antd';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { createAccount } from '../../../services/admin/account.service';
+import { delete_preview, preview } from '../../../helpers/preview_avatar';
+import { notification } from '../../../helpers/toast';
 import { ListRole } from '../../../hooks/listRole';
+import { createAccount } from '../../../services/admin/account.service';
 
 const { Option } = Select;
 
