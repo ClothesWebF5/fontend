@@ -38,6 +38,7 @@
     "redux": "^5.0.1",
     "slugify": "^1.6.6",
     "sweetalert2": "^11.19.1",
+    "swiper": "^11.2.6",
     "tailwind-merge": "^2.5.2",
     "wowjs": "^1.1.3"
   },

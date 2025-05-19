@@ -16,6 +16,8 @@ import Layout from "../layout/admin/index.layout";
 import Login from "../../view/auth/login.jsx";
 import OAuth2Callback from "../../view/auth/OAuth2Callback.jsx";
 import LayoutUser from "../../components/layout/client/index.layout.jsx";
+import ProductDetail from "../../view/client/product/detail.product.jsx";
+import ShoppingCart from "../../view/client/shopping/index.shopping.jsx";
 export const router = [
     {
         path: "/login",
@@ -37,6 +39,14 @@ export const router = [
                 path: "user/infor",
                 element: <Infor />
             },
+            {
+                path: "detail",
+                element: <ProductDetail />
+            },
+            {
+                path: "shopping-cart",
+                element: <ShoppingCart />
+            }
         ]
     },
     {
