@@ -11,7 +11,7 @@ function UpdateRole({ role, onClose, reload }) {
     });
 
     const handleUpdate = async () => {
-        console.log(updatedRole);
+  
         if (!updatedRole.name || !updatedRole.description || !updatedRole.code) {
             notification(toast, "Vui lòng nhập đầy đủ tên, mã và mô tả quyền.");
             return;

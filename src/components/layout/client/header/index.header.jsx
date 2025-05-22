@@ -1,16 +1,45 @@
 import { Popover, Transition } from "@headlessui/react";
-import { Menu, UserRound, ShoppingCart, Search, Heart, X, ChevronDown, Bell, LogOut, User, Package, Settings, History, Phone } from "lucide-react";
-import { useState, Fragment, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { handleLogout } from "../../../../view/auth/logout";
+import { Bell, ChevronDown, Heart, History, LogOut, Menu, Package, Search, Settings, ShoppingCart, User, UserRound, X } from "lucide-react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { findProductUser } from "../../../../helpers/findProductUser";
+import RenderCategoryTree from "../../../../helpers/treeCategory.user";
+import { ListCategory } from "../../../../hooks/listCategory";
+import { handleLogout } from "../../../../view/auth/logout";
+import { addCart, removeItem } from "../../../action/index.action";
+import { Introspect } from "../../../../hooks/introspect";
+import { updateCart } from "../../../../services/Client/shopping.service";
 
 export default function Header({ headerRef }) {
+    const dispatch = useDispatch();
+    const isFirstRun = useRef(true);
+    const { categories } = ListCategory();
     const [menuOpen, setMenuOpen] = useState(false);
     const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const infor = Object.keys(useSelector(state => state.infor)).length > 0 ? useSelector(state => state.infor) : null;
+
+    const cart = useSelector(state => state.cart);
+
+
+    const totalPrice = cart.reduce((total, item) => total + Math.round(item.price * (1 - item.percent / 100)) * item.quantity, 0)
+    const [options, setOptions] = useState({
+        categoryId: "",
+        searchKey: ""
+    });
+
+    const products = findProductUser(options);
+
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setOptions(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    }
 
     const closeCart = useCallback(() => {
         setIsClosing(true); // Ẩn panel ngay lập tức
@@ -40,36 +69,50 @@ export default function Header({ headerRef }) {
         { name: "Danh mục sản phẩm", hasCategory: true }
     ];
 
-    const categories = [
-        {
-            name: "Thời trang nam",
-            icon: <User size={18} />,
-            subcategories: ["Áo", "Quần", "Phụ kiện", "Giày dép"]
-        },
-        {
-            name: "Thời trang nữ",
-            icon: <User size={18} />,
-            subcategories: ["Áo", "Quần", "Váy đầm", "Phụ kiện", "Giày dép"]
-        },
-        {
-            name: "Điện thoại & Máy tính bảng",
-            icon: <Phone size={18} />,
-            subcategories: ["Điện thoại", "Máy tính bảng", "Phụ kiện"]
-        },
-        {
-            name: "Máy tính & Laptop",
-            icon: <Package size={18} />,
-            subcategories: ["Laptop", "PC", "Linh kiện", "Phụ kiện"]
-        },
-        {
-            name: "Thiết bị điện tử",
-            icon: <Settings size={18} />,
-            subcategories: ["TV & Màn hình", "Loa & Âm thanh", "Máy ảnh", "Phụ kiện"]
-        },
-    ];
-
+    const handleChangeQuantity = (index, type) => {
+        const newCart = [...cart];
+        const item = newCart[index];
+        const cartItem = {
+            id: item.id,
+            color: {
+                id: item.color.id
+            },
+            size: {
+                id: item.size.id
+            }
+        };
+        if (type === 'decrease' && item.quantity > 1) {
+            cartItem.quantity = item.quantity - 1;
+        } else if (type === 'increase' && item.quantity < item.stock) {
+            cartItem.quantity = item.quantity + 1;
+        }
+        dispatch(addCart(cartItem));
+    };
+    const handleRemoveItem = (i) => {
+        const item = cart[i];
+        dispatch(removeItem({
+            id: item.id,
+            color: {
+                id: item.color.id
+            },
+            size: {
+                id: item.size.id
+            }
+        }))
+    }
+    useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        const fetchApi = async () => {
+            const res = await updateCart(cart);
+        }
+        fetchApi();
+    }, [cart]);
     return (
         <>
+
             <header className="fixed top-0 left-0 w-full z-50 bg-white" ref={headerRef}>
                 <div className="border-b border-gray-100">
                     <div className="flex items-center justify-between px-4 md:px-6 py-4 max-w-7xl mx-auto">
@@ -97,7 +140,9 @@ export default function Header({ headerRef }) {
                                         <Popover className="relative">
                                             {({ open }) => (
                                                 <>
-                                                    <Popover.Button className="font-medium text-gray-700 hover:text-black py-2 transition-colors duration-200 flex items-center focus:outline-none">
+                                                    <Popover.Button
+                                                        onClick={() => handleChange({ target: { name: 'categoryId', value: "" } })}
+                                                        className="font-medium text-gray-700 hover:text-black py-2 transition-colors duration-200 flex items-center focus:outline-none">
                                                         {item.name}
                                                         <ChevronDown className="ml-1 w-4 h-4" />
                                                     </Popover.Button>
@@ -112,46 +157,8 @@ export default function Header({ headerRef }) {
                                                     >
                                                         <Popover.Panel className="absolute top-full left-0 z-50 mt-2 w-80 bg-white shadow-lg rounded-md overflow-hidden">
                                                             <div className="p-4">
-                                                                <h3 className="font-medium text-gray-900 mb-3">Danh mục sản phẩm</h3>
                                                                 <div className="space-y-1">
-                                                                    {categories.map((category, idx) => (
-                                                                        <Popover key={idx} className="relative">
-                                                                            {({ open: subOpen }) => (
-                                                                                <>
-                                                                                    <Popover.Button className="w-full text-left px-3 py-2 rounded flex items-center justify-between hover:bg-gray-100 transition-colors focus:outline-none">
-                                                                                        <div className="flex items-center">
-                                                                                            <span className="mr-2">{category.icon}</span>
-                                                                                            <span className="text-sm">{category.name}</span>
-                                                                                        </div>
-                                                                                        <ChevronDown className={`w-4 h-4 transition-transform ${subOpen ? 'rotate-180' : ''}`} />
-                                                                                    </Popover.Button>
-                                                                                    <Transition
-                                                                                        as={Fragment}
-                                                                                        enter="transition ease-out duration-200"
-                                                                                        enterFrom="opacity-0"
-                                                                                        enterTo="opacity-100"
-                                                                                        leave="transition ease-in duration-150"
-                                                                                        leaveFrom="opacity-100"
-                                                                                        leaveTo="opacity-0"
-                                                                                    >
-                                                                                        <Popover.Panel className="px-3 py-2">
-                                                                                            <div className="pl-6 space-y-1 border-l border-gray-200">
-                                                                                                {category.subcategories.map((sub, subIdx) => (
-                                                                                                    <a
-                                                                                                        key={subIdx}
-                                                                                                        href="#"
-                                                                                                        className="block text-sm py-1 hover:text-blue-600"
-                                                                                                    >
-                                                                                                        {sub}
-                                                                                                    </a>
-                                                                                                ))}
-                                                                                            </div>
-                                                                                        </Popover.Panel>
-                                                                                    </Transition>
-                                                                                </>
-                                                                            )}
-                                                                        </Popover>
-                                                                    ))}
+                                                                    <RenderCategoryTree categories={categories} handleChange={handleChange} />
                                                                 </div>
                                                             </div>
                                                         </Popover.Panel>
@@ -202,12 +209,13 @@ export default function Header({ headerRef }) {
                                                 <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
                                                     <input
                                                         type="text"
-                                                        placeholder="Tìm kiếm..."
+                                                        name="searchKey"
+                                                        value={options.searchKey}
+                                                        onChange={handleChange}
+                                                        placeholder="Tìm kiếm sản phẩm..."
                                                         className="w-full px-4 py-2 focus:outline-none text-sm"
                                                     />
-                                                    <button className="bg-gray-100 px-3 py-2 hover:bg-gray-200 transition-colors">
-                                                        <Search className="w-4 h-4" />
-                                                    </button>
+
                                                 </div>
                                             </Popover.Panel>
                                         </Transition>
@@ -390,7 +398,7 @@ export default function Header({ headerRef }) {
                                 >
                                     <ShoppingCart className="w-5 h-5" />
                                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold">
-                                        2
+                                        {cart.length}
                                     </span>
                                 </button>
                             </div>
@@ -429,7 +437,8 @@ export default function Header({ headerRef }) {
                             <div className="relative">
                                 <input
                                     type="text"
-                                    placeholder="Tìm kiếm..."
+                                    name="searchKey"
+                                    placeholder="Tìm kiếm sản phẩm"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none text-sm"
                                 />
                                 <Search className="absolute right-3 top-2.5 text-gray-400 w-4 h-4" />
@@ -449,40 +458,7 @@ export default function Header({ headerRef }) {
                                             </button>
 
                                             {categoryMenuOpen && (
-                                                <div className="bg-gray-50 py-2">
-                                                    {categories.map((category, cidx) => (
-                                                        <div key={cidx} className="border-b border-gray-100 last:border-b-0">
-                                                            <div
-                                                                className="flex items-center justify-between px-4 py-3 cursor-pointer"
-                                                                onClick={() => {
-                                                                    const el = document.getElementById(`subcategory-${cidx}`);
-                                                                    if (el) {
-                                                                        el.style.display = el.style.display === 'none' ? 'block' : 'none';
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <div className="flex items-center">
-                                                                    <span className="mr-2">{category.icon}</span>
-                                                                    <span className="text-sm font-medium">{category.name}</span>
-                                                                </div>
-                                                                <ChevronDown className="w-4 h-4" />
-                                                            </div>
-                                                            <div id={`subcategory-${cidx}`} className="px-4 py-2" style={{ display: 'none' }}>
-                                                                <div className="pl-6 space-y-2 border-l border-gray-200">
-                                                                    {category.subcategories.map((sub, subIdx) => (
-                                                                        <a
-                                                                            key={subIdx}
-                                                                            href="#"
-                                                                            className="block text-sm py-1 hover:text-blue-600"
-                                                                        >
-                                                                            {sub}
-                                                                        </a>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                                <RenderCategoryTree categories={categories} />
                                             )}
                                         </div>
                                     ) : (
@@ -581,39 +557,75 @@ export default function Header({ headerRef }) {
 
                         {/* Danh sách sản phẩm */}
                         <div className="flex-1 overflow-y-auto divide-y divide-gray-200 p-4 bg-gray-50">
-                            {[...Array(8)].length > 0 ? (
-                                [...Array(8)].map((_, i) => (
+                            {cart.length > 0 ? (
+                                cart.map((item, i) => (
                                     <div
                                         key={i}
                                         className="flex gap-4 p-4 hover:bg-white rounded-lg transition-colors duration-200"
                                     >
                                         <img
-                                            src="http://res.cloudinary.com/dxx1lgamz/image/upload/6a0ce971-7007-4c0a-865a-bde7d826ee7a_biti-huner-cam"
+                                            src={item.image.src}
                                             alt="Sản phẩm"
                                             className="w-24 h-28 rounded-lg object-cover border border-gray-200"
                                         />
                                         <div className="flex-1 flex flex-col justify-between">
                                             <div>
                                                 <h4 className="text-base font-semibold text-gray-900 leading-tight">
-                                                    Áo hai dây cổ yếm
+                                                    {item.name}
                                                 </h4>
-                                                <p className="text-sm text-gray-600 mt-1">Màu: Trắng ngà | Size: M</p>
+                                                <p className="text-sm text-gray-600 mt-1">Màu: {item.color.name} | Size: {item.size.name}</p>
                                             </div>
                                             <div className="flex items-center justify-between mt-3">
-                                                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
-                                                    <button className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition-colors">
+                                                <div className="flex items-center w-[100px] h-9 border border-gray-300 rounded-md overflow-hidden">
+                                                    <button
+                                                        onClick={() => handleChangeQuantity(i, 'decrease')}
+                                                        disabled={item.quantity <= 1}
+                                                        className="w-1/3 h-full flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    >
                                                         -
                                                     </button>
-                                                    <span className="px-4 py-1.5 text-sm font-medium text-gray-800">1</span>
-                                                    <button className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition-colors">
+                                                    <input
+                                                        type="text"
+                                                        readOnly
+                                                        value={item.quantity}
+                                                        min="1"
+                                                        max={item.stock}
+                                                        className="w-1/3 h-full text-center text-sm font-medium text-gray-800 outline-none"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleChangeQuantity(i, 'increase')}
+                                                        disabled={item.quantity >= item.stock}
+                                                        className="w-1/3 h-full flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    >
                                                         +
                                                     </button>
                                                 </div>
-                                                <span className="text-base font-bold text-red-600">890.000₫</span>
+
+                                                {item.percent ? (
+                                                    <div className="text-right">
+                                                        <p className="text-base font-bold text-red-600">
+                                                            {(item.price * (1 - item.percent / 100) * item.quantity).toLocaleString()}₫
+                                                        </p>
+                                                        <div className="flex items-center gap-2 justify-end">
+                                                            <span className="text-sm text-gray-400 line-through">
+                                                                {(item.price * item.quantity).toLocaleString()}₫
+                                                            </span>
+                                                            <span className="text-sm font-medium text-red-500">
+                                                                -{item.percent}%
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-base font-bold text-gray-800">
+                                                        {(item.price * item.quantity).toLocaleString()}₫
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                         <button className="text-gray-400 hover:text-red-500 transition-colors duration-200">
-                                            <X className="w-5 h-5" />
+                                            <X
+                                                onClick={() => handleRemoveItem(i)}
+                                                className="w-5 h-5" />
                                         </button>
                                     </div>
                                 ))
@@ -636,11 +648,13 @@ export default function Header({ headerRef }) {
                         <div className="p-5 border-t border-gray-200 bg-white">
                             <div className="flex justify-between items-center text-lg font-semibold text-gray-800 mb-4">
                                 <span>Tổng cộng:</span>
-                                <span className="text-red-600">1.780.000₫</span>
+                                <span className="text-red-600">{totalPrice.toLocaleString()}₫</span>
                             </div>
-                            <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 text-base font-semibold transition-all duration-200 shadow-md">
-                                Xem giỏ hàng
-                            </button>
+                            <Link to={"/shopping-cart"}>
+                                <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 text-base font-semibold transition-all duration-200 shadow-md">
+                                    Xem giỏ hàng
+                                </button>
+                            </Link>
                             <button className="w-full py-3 mt-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 text-base font-semibold transition-all duration-200">
                                 Thanh toán
                             </button>

@@ -428,7 +428,7 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Product recommendations */}
-                <div className="mt-12">
+                {/* <div className="mt-12">
                     <h3 className="text-xl font-bold mb-6">Có thể bạn cũng thích</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {
@@ -437,7 +437,7 @@ const ProductDetail = () => {
                             ))
                         }
                     </div>
-                </div>
+                </div> */}
             </div>
 
             {showGuide && (

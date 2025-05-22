@@ -157,6 +157,8 @@ const isPublicEnpoint = (path) => {
     "api/common/colors",
     "api/common/sizes",
     "api/common/products",
+    "api/admin/categories",
+    "api/products",
     "auth/social-login",
     "auth/login/google"
   ].some(item => path.startsWith(item));
@@ -226,6 +228,7 @@ export const get = async (path) => {
 };
 
 export const post = async (path, newData) => {
+
   const isFormData = newData instanceof FormData;
   const headers = !isFormData ? { "Content-Type": "application/json" } : undefined;
 

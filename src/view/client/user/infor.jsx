@@ -8,7 +8,7 @@ function Infor() {
     useEffect(() => {
         const fetchApi = async () => {
             const res = await getInfor();
-            console.log(res);
+    
             if(res.status === 200){
                 setInfor("OKKKKKKKKKKKK")
             }

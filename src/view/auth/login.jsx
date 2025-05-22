@@ -9,7 +9,7 @@
 // import { jwtDecode } from "jwt-decode";
 // import { getProfile } from "../../services/auth/auth.service";
 // import { useDispatch } from "react-redux";
-// import { infor as profile } from "../../components/action/infor.action";
+// import { infor as profile } from "../../components/action/index.action";
 
 // function Login() {
 //     const navigate = useNavigate();
@@ -66,7 +66,7 @@
 //             <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] font-poppins text-white px-4">
 //                 <div className="w-full max-w-sm p-8 bg-[rgba(0,0,0,0.6)] rounded-2xl backdrop-blur-md shadow-xl">
 //                     <h1 className="text-center text-3xl font-bold mb-6 text-green-400">Đăng nhập</h1>
-                
+
 //                     <form onSubmit={handleSubmit}>
 //                         <div className="mb-4 relative">
 //                             <input
@@ -155,7 +155,8 @@ import { notification } from "../../helpers/toast";
 import { jwtDecode } from "jwt-decode";
 import { getProfile } from "../../services/auth/auth.service";
 import { useDispatch } from "react-redux";
-import { infor as profile } from "../../components/action/infor.action";
+import { createCart, infor as profile } from "../../components/action/index.action";
+import { addToCart, getCart } from "../../services/Client/shopping.service";
 
 function Login() {
     const navigate = useNavigate();
@@ -194,7 +195,17 @@ function Login() {
                     dispatch(profile(infor.data.result));
                     const scope = jwtDecode(token).scope;
                     const isUser = scope.split(" ").includes("ROLE_USER");
-                    if (isUser) navigate("/user/infor");
+                    if (isUser) {
+                        const res = await addToCart(cart);
+                        if (res.status == 200) {
+                            const getCartUser = await getCart();
+                            if (getCartUser.status == 200) {
+                                localStorage.setItem('cart', JSON.stringify(getCartUser.data.result));
+                                dispatch(createCart(getCartUser.data.result));
+                                navigate("/");
+                            }
+                        }
+                    }
                     else navigate("/admin/dashboard");
                 } else {
                     notification(toast, "Không lấy được thông tin người dùng");
@@ -211,9 +222,9 @@ function Login() {
             <ToastContainer position="top-center" autoClose={5000} pauseOnHover={false} />
             <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] font-poppins text-white px-4">
                 <div className="w-full max-w-sm p-8 bg-[rgba(0,0,0,0.6)] rounded-2xl backdrop-blur-md shadow-xl">
-                 
+
                     <h1 className="text-center text-3xl font-bold mb-6 text-green-400">Đăng nhập</h1>
-                    
+
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4 relative">
                             <input
@@ -276,7 +287,7 @@ function Login() {
                     <p className="text-center text-sm mt-6">
                         Bạn chưa đăng ký? <Link to={"/register"} className="text-green-400 hover:underline">Tạo tài khoản</Link>
                     </p>
-                    
+
                     <div className="mt-6 pt-4 border-t border-gray-700 flex justify-center">
                         <button
                             onClick={() => navigate("/")}

@@ -1,13 +1,83 @@
 import { Eye, Heart, RefreshCwIcon, ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addCart } from "../../action/index.action";
 
 function CardProduct({ product }) {
+
     const [hoveredCard, setHoveredCard] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
 
-    const colors = product.colors || ["#e0e0e0", "#264653", "#f4a261"];
-    const sizes = product.sizes || ["S", "M", "L", "XL"];
+    // Lấy danh sách size duy nhất từ details
+    const sizes = [...new Set(product.details.map((detail) => detail.size.name))];
+
+    // Lấy danh sách màu còn hàng (stock > 0)
+    const colors = [
+        ...new Map(
+            product.details
+                .filter((detail) => detail.stock > 0)
+                .map((detail) => [
+                    detail.color.id,
+                    {
+                        id: detail.color.id,
+                        name: detail.color.name,
+                        hex: detail.color.hexCode,
+                    },
+                ])
+        ).values(),
+    ];
+
+    // Mặc định chọn màu đầu tiên nếu chưa chọn
+    const defaultColor = colors[0] || null;
+
+    // Mặc định chọn size đầu tiên nếu chưa chọn
+    const defaultSize = sizes[0] || null;
+
+    // Nếu chưa chọn thì set mặc định
+    if (!selectedColor && defaultColor) setSelectedColor(defaultColor);
+    if (!selectedSize && defaultSize) setSelectedSize(defaultSize);
+
+    // Tìm detail tương ứng với màu và size đã chọn
+    const selectedDetail = product.details.find(
+        (detail) =>
+            detail.color.id === selectedColor?.id && detail.size.name === selectedSize
+    );
+
+    // Lấy ảnh theo màu đã chọn
+    const defaultImage = product.images.find(
+        (img) => img.colorId === (selectedColor?.id || defaultColor?.id)
+    );
+
+    const currentImage = defaultImage || product.images[0];
+
+    const discountPercent = product.discounts[0]?.percent || 0;
+    const dispatch = useDispatch();
+
+    const handleAddToCart = () => {
+        const cartItem = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            percent: discountPercent,
+            image: {
+                id: currentImage?.id,
+                src: currentImage?.src
+            },
+            color: {
+                id: selectedColor?.id,
+                name: selectedColor?.name,
+                hex: selectedColor?.hex
+            },
+            size: {
+                id: selectedDetail?.size.id,
+                name: selectedDetail?.size.name
+            },
+            stock: selectedDetail.stock,
+            quantity: 1
+        };
+        dispatch(addCart(cartItem));
+    }
 
     return (
         <div
@@ -17,32 +87,53 @@ function CardProduct({ product }) {
             onMouseLeave={() => setHoveredCard(null)}
         >
             {/* SALE Badge */}
-            <div className="absolute z-10 top-[14px] left-[24px]">
-                <div className="bg-black text-white px-6 h-6 font-bold text-xs flex items-center justify-center transform rotate-[-45deg] origin-bottom-left translate-y-4 -translate-x-6">
-                    SALE
+            {product.discounts.length > 0 && (
+                <div className="absolute top-2 left-[-20px] z-10 rotate-[-45deg] bg-[#46C389] text-white text-xs font-bold px-6 py-[2px] shadow-md">
+                    {product.discounts[0]?.percent}%
                 </div>
-            </div>
+            )}
 
             {/* Product Image */}
             <div className="relative h-64 w-full overflow-hidden">
                 <img
-                    src="http://res.cloudinary.com/dxx1lgamz/image/upload/6a0ce971-7007-4c0a-865a-bde7d826ee7a_biti-huner-cam"
+                    src={currentImage.src}
                     alt={product.name}
                     className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out group-hover:scale-110"
                 />
 
                 {/* Action Buttons */}
                 <div className="absolute right-2 top-2 flex flex-col gap-2">
-                    <button className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 ${hoveredCard === product.id ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}>
+                    <button
+                        className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 ${hoveredCard === product.id
+                            ? "translate-x-0 opacity-100"
+                            : "translate-x-12 opacity-0"
+                            }`}
+                    >
                         <Heart size={18} className="text-gray-600" />
                     </button>
-                    <button className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-75 ${hoveredCard === product.id ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}>
+                    <button
+                        className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-75 ${hoveredCard === product.id
+                            ? "translate-x-0 opacity-100"
+                            : "translate-x-12 opacity-0"
+                            }`}
+                    >
                         <Eye size={18} className="text-gray-600" />
                     </button>
-                    <button className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-100 ${hoveredCard === product.id ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}>
+                    <button
+                        className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-100 ${hoveredCard === product.id
+                            ? "translate-x-0 opacity-100"
+                            : "translate-x-12 opacity-0"
+                            }`}
+                    >
                         <RefreshCwIcon size={18} className="text-gray-600" />
                     </button>
-                    <button className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-150 ${hoveredCard === product.id ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}>
+                    <button
+                        onClick={() => handleAddToCart(product.id)}
+                        className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-150 ${hoveredCard === product.id
+                            ? "translate-x-0 opacity-100"
+                            : "translate-x-12 opacity-0"
+                            }`}
+                    >
                         <ShoppingCart size={18} className="text-gray-600" />
                     </button>
                 </div>
@@ -50,33 +141,39 @@ function CardProduct({ product }) {
 
             {/* Product Details */}
             <div className="p-4">
-                <p className="text-rose-400 uppercase text-sm font-medium">{product.category}</p>
+                <p className="text-rose-400 uppercase text-sm font-medium">
+                    {product.category.name}
+                </p>
                 <h3 className="text-gray-600 font-medium mt-1">{product.name}</h3>
 
                 {/* Color Selection */}
                 <div className="flex items-center space-x-2 mt-3">
-                    {colors.map((color, index) => (
+                    {colors.map((color) => (
                         <button
-                            key={index}
+                            key={color.id}
                             onClick={() => setSelectedColor(color)}
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedColor === color ? "border-gray-600" : "border-gray-300"
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedColor?.id === color.id
+                                ? "border-gray-600"
+                                : "border-gray-300"
                                 }`}
-                            style={{ backgroundColor: color }}
+                            style={{ backgroundColor: color.hex }}
                         >
-                            {selectedColor === color && <Check size={12} className="text-white" />}
+                            {selectedColor?.id === color.id && (
+                                <Check size={12} className="text-white" />
+                            )}
                         </button>
                     ))}
                 </div>
 
                 {/* Size Selection */}
                 <div className="flex flex-wrap gap-2 mt-3">
-                    {sizes.map((size, index) => (
+                    {sizes.map((size) => (
                         <button
-                            key={index}
+                            key={size}
                             onClick={() => setSelectedSize(size)}
-                            className={`px-2 py-1 text-xs border rounded-md ${selectedSize === size
-                                    ? "bg-black text-white border-black"
-                                    : "bg-white text-gray-700 border-gray-300"
+                            className={`px-3 py-1 text-md border rounded-md ${selectedSize === size
+                                ? "bg-black text-white border-black"
+                                : "bg-white text-gray-700 border-gray-300"
                                 }`}
                         >
                             {size}
@@ -84,12 +181,32 @@ function CardProduct({ product }) {
                     ))}
                 </div>
 
+                {/* Hiển thị Stock và SoldCount cho màu & size đã chọn */}
+                {selectedDetail ? (
+                    <div className="mt-3 text-sm text-gray-700">
+                        <div className="flex justify-between text-xs sm:text-sm">
+                            <span className="font-medium text-gray-700">Đã bán: {selectedDetail.soldCount}</span>
+                            <span className="font-medium text-gray-700">Còn lại:{selectedDetail.stock}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-1 sm:h-2">
+                            <div
+                                className="bg-pink-500 h-1 sm:h-2 rounded-full"
+                                style={{ width: `${(selectedDetail.soldCount / (selectedDetail.soldCount + selectedDetail.stock)) * 100}%` }}
+                            ></div>
+                        </div>
+
+                    </div>
+                ) : (
+                    <p className="mt-3 text-sm text-red-500">Không có sản phẩm với lựa chọn này</p>
+                )}
+
                 {/* Rating */}
                 <div className="flex mt-3">
                     {[...Array(5)].map((_, index) => (
                         <svg
                             key={index}
-                            className={`w-4 h-4 ${index < product.rating ? 'text-orange-400' : 'text-gray-300'}`}
+                            className={`w-4 h-4 ${index < product.rating ? "text-orange-400" : "text-gray-300"
+                                }`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
                         >
@@ -99,13 +216,19 @@ function CardProduct({ product }) {
                 </div>
 
                 {/* Price */}
-                <div className="flex items-center mt-2">
-                    <span className="text-black font-bold text-lg">
-                        {product?.currentPrice?.toLocaleString()}đ
-                    </span>
-                    {product.originalPrice && (
-                        <span className="ml-2 text-gray-400 line-through">
-                            {product?.originalPrice?.toLocaleString()}đ
+                <div className="mt-2 text-base font-semibold">
+                    {product.discounts.length > 0 ? (
+                        <>
+                            <span className="text-lg font-bold text-black">
+                                {Math.round(product.price * (1 - discountPercent / 100)).toLocaleString()}₫
+                            </span>
+                            <span className="ml-2 text-sm text-gray-500 line-through">
+                                {product.price.toLocaleString()}₫
+                            </span>
+                        </>
+                    ) : (
+                        <span className="text-lg font-bold text-black">
+                            {product.price.toLocaleString()}₫
                         </span>
                     )}
                 </div>

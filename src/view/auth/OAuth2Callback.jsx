@@ -5,13 +5,15 @@ import { sendCode } from "../../services/Client/user.service";
 import { notification } from "../../helpers/toast";
 import { jwtDecode } from "jwt-decode";
 import { getProfile } from "../../services/auth/auth.service";
-import { useDispatch } from "react-redux";
-import { infor as profile } from "../../components/action/infor.action";
+import { useDispatch, useSelector } from "react-redux";
+import { infor as profile, createCart } from "../../components/action/index.action";
+import { addToCart, getCart } from "../../services/Client/shopping.service";
 
 function OAuth2Callback() {
     const navigate = useNavigate();
     const { type } = useParams();
     const dispatch = useDispatch();
+    const cart = useSelector(state => state.cart);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -28,8 +30,19 @@ function OAuth2Callback() {
                         dispatch(profile(infor.data.result));
                         const scope = jwtDecode(token).scope;
                         const isUser = scope.split(" ").includes("ROLE_USER");
-                        if (isUser) navigate("/");
-                        else navigate("/admin/dashboard");
+                        if (isUser) {
+                            const res = await addToCart(cart);
+                            if(res.status == 200){
+                                const getCartUser = await getCart();
+                                if(getCartUser.status == 200){
+                                    localStorage.setItem('cart', JSON.stringify(getCartUser.data.result));
+                                    dispatch(createCart(getCartUser.data.result));
+                                    navigate("/");
+                                }
+                            }
+                        } else {
+                            navigate("/admin/dashboard")
+                        };
                     } else {
                         notification(toast, "Không lấy được thông tin người dùng");
                         navigate("/login");

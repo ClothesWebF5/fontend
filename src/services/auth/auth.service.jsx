@@ -1,4 +1,4 @@
-import { verifyToken as verify, get } from "../../utils/request";
+import { verifyToken as verify, get, post } from "../../utils/request";
 
 export const verifyToken = async (data) => {
     const res = await verify("auth/introspect", data);
@@ -7,5 +7,10 @@ export const verifyToken = async (data) => {
 
 export const getProfile = async () =>{
     const res = await get("auth/profile");
+    return res;
+}
+
+export const introspect = async (data) => {
+    const res = await post("auth/introspect", data);
     return res;
 }

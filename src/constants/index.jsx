@@ -4,6 +4,7 @@ import ProfileImage from "@/assets/profile-image.jpg";
 import ProductImage from "@/assets/product-image.jpg";
 
 export const prefixAdmin = "api/admin";
+export const prefixUser = "api";
 
 export const navbarLinks = [
     {

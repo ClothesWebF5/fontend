@@ -1,17 +1,16 @@
-import { ArrowRight, Clock, DollarSign, Phone, Plus, RefreshCw, ShieldCheck, ShoppingCart, Star, Truck } from 'lucide-react';
+import { ArrowRight, Clock, Phone, Plus, RefreshCw, ShieldCheck, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import CardProduct from '../../../components/pages/home/CardProduct';
 import ProductSlider from "../../../components/pages/home/ProductSlide";
+import { ListCategory } from "../../../hooks/listCategory";
 import { homeJquery } from '../../../jquery/home.jquery';
 
 export default function Home() {
-    const [categories] = useState([
-        { name: 'Clothing', count: 5 },
-        { name: 'Footwear', count: 3 },
-        { name: 'Jewelry', count: 7 },
-        { name: 'Perfume', count: 4 },
-        { name: 'Cosmetics', count: 6 },
-    ]);
+    const { categories } = ListCategory();
+    const products = useSelector(state => state.productForUser);
+    const cart = useSelector(state => state.cart);
+    
 
     const [newArrivals] = useState([
         { id: 1, name: 'Relaxed Short Full Sleeve T-Shirt', price: '$35.00', oldPrice: '$45.00', image: '/api/placeholder/60/80', category: 'Mens Fashion' },
@@ -25,20 +24,6 @@ export default function Home() {
         { id: 9, name: 'Sports Class Smart Watch', price: '$235.00', oldPrice: '$285.00', image: '/api/placeholder/60/80', category: 'Technology' }
     ]);
 
-    const [products] = useState([
-        { id: 1, name: 'Military Winter Jacket', rating: 4, price: '$34.00', oldPrice: '$50.00', image: '/api/placeholder/80/100', category: 'JACKET' },
-        { id: 2, name: 'Pure Garment Dyed Cotton Shirt', rating: 5, price: '$45.00', oldPrice: '$60.00', image: '/api/placeholder/80/100', category: 'SHIRT' },
-        { id: 3, name: 'Mens Flat Cap Jacket', rating: 3, price: '$59.00', oldPrice: '$75.00', image: '/api/placeholder/80/100', category: 'JACKET' },
-        { id: 4, name: 'Mens Flower Print Shirt', rating: 4, price: '$45.00', oldPrice: '$60.00', image: '/api/placeholder/80/100', category: 'SHIRT' },
-        { id: 5, name: 'Elegant Mens Leather Boots', rating: 5, price: '$95.00', oldPrice: '$115.00', image: '/api/placeholder/80/100', category: 'SHOES' },
-        { id: 6, name: 'Pocket Watch Leather Pouch', rating: 4, price: '$108.00', oldPrice: '$120.00', image: '/api/placeholder/80/100', category: 'JEWELRY' },
-        { id: 7, name: 'Apple Watch Series 5 40mm', rating: 5, price: '$300.00', oldPrice: '$350.00', image: '/api/placeholder/80/100', category: 'TECHNOLOGY' },
-        { id: 8, name: 'Womens Party Dress Shoes', rating: 4, price: '$125.00', oldPrice: '$150.00', image: '/api/placeholder/80/100', category: 'WOMEN' },
-        { id: 9, name: 'Mens Winter Jacket', rating: 4, price: '$95.00', oldPrice: '$120.00', image: '/api/placeholder/80/100', category: 'JACKET' },
-        { id: 10, name: 'Sports & Running Shoes - Black', rating: 5, price: '$59.00', oldPrice: '$80.00', image: '/api/placeholder/80/100', category: 'SHOES' },
-        { id: 11, name: 'Mens Leather Formal Wear Shoes', rating: 4, price: '$59.00', oldPrice: '$80.00', image: '/api/placeholder/80/100', category: 'SHOES' },
-        { id: 12, name: 'Pastel Basic T-shirt', rating: 5, price: '$29.00', oldPrice: '$39.00', image: '/api/placeholder/80/100', category: 'WOMEN' },
-    ]);
 
     const [bestSellers] = useState([
         { id: 1, name: 'Baby Fabric Shoes', rating: 5, price: '$5.00', oldPrice: '$8.00', image: '/api/placeholder/60/80', category: 'FOOTWEAR' },
@@ -53,7 +38,7 @@ export default function Home() {
         { id: 3, title: 'EBT vendors: Claim Your Share of SNAP Online Revenue', image: '/api/placeholder/300/120' },
         { id: 4, title: 'Curbside fashion Trends: How to Win the Pickup Battle', image: '/api/placeholder/300/120' },
     ]);
-
+    
     const [dealOfTheDayProducts] = useState([
         {
             name: 'Rose Gold Diamonds Earring',
@@ -100,24 +85,24 @@ export default function Home() {
 
     useEffect(() => {
         homeJquery();
-    }, []);
+    }, [categories]);
 
     const [currentSlide, setCurrentSlide] = useState(0);
     const [currentDealSlide, setCurrentDealSlide] = useState(0);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    //     }, 3000);
+    //     return () => clearInterval(interval);
+    // }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentDealSlide((prev) => (prev + 1) % dealOfTheDayProducts.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, [dealOfTheDayProducts.length]);
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         setCurrentDealSlide((prev) => (prev + 1) % dealOfTheDayProducts.length);
+    //     }, 3000);
+    //     return () => clearInterval(interval);
+    // }, [dealOfTheDayProducts.length]);
 
     const [timeLeft, setTimeLeft] = useState({
         days: 360,
@@ -126,36 +111,36 @@ export default function Home() {
         seconds: 0
     });
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeLeft(prevTime => {
-                let { days, hours, minutes, seconds } = prevTime;
+    // useEffect(() => {
+    //     const timer = setInterval(() => {
+    //         setTimeLeft(prevTime => {
+    //             let { days, hours, minutes, seconds } = prevTime;
 
-                if (seconds > 0) {
-                    seconds -= 1;
-                } else {
-                    seconds = 59;
-                    if (minutes > 0) {
-                        minutes -= 1;
-                    } else {
-                        minutes = 59;
-                        if (hours > 0) {
-                            hours -= 1;
-                        } else {
-                            hours = 23;
-                            if (days > 0) {
-                                days -= 1;
-                            }
-                        }
-                    }
-                }
+    //             if (seconds > 0) {
+    //                 seconds -= 1;
+    //             } else {
+    //                 seconds = 59;
+    //                 if (minutes > 0) {
+    //                     minutes -= 1;
+    //                 } else {
+    //                     minutes = 59;
+    //                     if (hours > 0) {
+    //                         hours -= 1;
+    //                     } else {
+    //                         hours = 23;
+    //                         if (days > 0) {
+    //                             days -= 1;
+    //                         }
+    //                     }
+    //                 }
+    //             }
 
-                return { days, hours, minutes, seconds };
-            });
-        }, 1000);
+    //             return { days, hours, minutes, seconds };
+    //         });
+    //     }, 1000);
 
-        return () => clearInterval(timer);
-    }, []);
+    //     return () => clearInterval(timer);
+    // }, []);
 
 
     return (
@@ -302,22 +287,12 @@ export default function Home() {
                                         </div>
                                         <div className='hidden content-slide'>
                                             <div className="mt-2 pt-1 ml-1 text-sm text-gray-600 border-t-2 space-y-2">
-                                                <div className="flex justify-between">
-                                                    <span>Shirt</span>
-                                                    <span>300</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span>Shorts & Jeans</span>
-                                                    <span>60</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span>Jacket</span>
-                                                    <span>50</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span>Dress & Frock</span>
-                                                    <span>87</span>
-                                                </div>
+                                                {category.children && category.children.length > 0 && category.children.map(sub => (
+                                                    <div className="flex justify-between">
+                                                        <span>{sub.name}</span>
+                                                        <span>{sub.children.length}</span>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     </li>
@@ -485,7 +460,7 @@ export default function Home() {
 
                         {/* New Products */}
                         <div className="mb-2 sm:mb-12">
-                            <h2 className="font-semibold mb-1 sm:mb-6">New Products</h2>
+                            <h2 className="font-semibold mb-1 sm:mb-6">Sản phẩm của chúng tôi</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                                 {products.map((product) => (
                                     <CardProduct product={product} key={product.id} />
@@ -497,7 +472,7 @@ export default function Home() {
             </div>
 
             {/* Testimonial */}
-           <div className="px-4">
+            <div className="px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-stretch">
                     <div className="md:col-span-1 space-y-6 h-full">
                         <h2 className="text-xl font-semibold border-b pb-2">Testimonial</h2>
