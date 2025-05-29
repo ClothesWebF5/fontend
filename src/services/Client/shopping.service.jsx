@@ -1,4 +1,4 @@
-import { get, patch, post } from "../../utils/request"
+import { del, get, patch, post } from "../../utils/request"
 import { prefixUser } from "../../constants"
 
 export const addToCart = async (data) => {
@@ -13,5 +13,10 @@ export const getCart = async() => {
 
 export const updateCart = async (data) => {
     const res = await patch(`${prefixUser}/shopping-cart`, data);
+    return res;
+}
+
+export const resetCart = async () => {
+    const res = await del(`${prefixUser}/shopping-cart`);
     return res;
 }

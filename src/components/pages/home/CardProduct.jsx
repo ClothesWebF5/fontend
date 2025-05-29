@@ -2,6 +2,8 @@ import { Eye, Heart, RefreshCwIcon, ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addCart } from "../../action/index.action";
+import { notification } from "../../../helpers/toast";
+import { toast } from "react-toastify";
 
 function CardProduct({ product }) {
 
@@ -77,6 +79,7 @@ function CardProduct({ product }) {
             quantity: 1
         };
         dispatch(addCart(cartItem));
+        notification(toast, "Thêm sản phẩm thành công", "success");
     }
 
     return (

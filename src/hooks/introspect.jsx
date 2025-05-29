@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { introspect } from "../services/auth/auth.service";
+import { useSelector } from "react-redux";
 
 export const Introspect = () => {
+    const cart = useSelector(state => state.cart);
     const [isValid, setIsValid] = useState(false);
     const token = localStorage.getItem("accessToken") || "accessToken";
     const fetchApi = async () => {

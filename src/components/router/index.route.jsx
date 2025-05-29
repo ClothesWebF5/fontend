@@ -18,6 +18,11 @@ import OAuth2Callback from "../../view/auth/OAuth2Callback.jsx";
 import LayoutUser from "../../components/layout/client/index.layout.jsx";
 import ProductDetail from "../../view/client/product/detail.product.jsx";
 import ShoppingCart from "../../view/client/shopping/index.shopping.jsx";
+import Payment from "../../view/client/payment/index.payment.jsx";
+import PaymentCallback from "../../view/client/payment/callBack.payment.jsx";
+import Order from "../../view/client/order/index.order.jsx";
+
+
 export const router = [
     {
         path: "/login",
@@ -46,6 +51,14 @@ export const router = [
             {
                 path: "shopping-cart",
                 element: <ShoppingCart />
+            },
+            {
+                path: "payment",
+                element: <Payment />
+            },
+            {
+                path: "order",
+                element: <Order />
             }
         ]
     },
@@ -125,6 +138,10 @@ export const router = [
     {
         path: "*",
         element: <Error />
+    },
+    {
+        path: "/payments/callback",
+        element: <PaymentCallback />
     },
     {
         path: "/unauthorized",

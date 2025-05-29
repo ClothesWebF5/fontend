@@ -5,6 +5,7 @@ import CardProduct from '../../../components/pages/home/CardProduct';
 import ProductSlider from "../../../components/pages/home/ProductSlide";
 import { ListCategory } from "../../../hooks/listCategory";
 import { homeJquery } from '../../../jquery/home.jquery';
+import { ToastContainer } from 'react-toastify';
 
 export default function Home() {
     const { categories } = ListCategory();
@@ -145,6 +146,7 @@ export default function Home() {
 
     return (
         <>
+            <ToastContainer position="top-center" autoClose={2000} pauseOnHover={false} />
             {/* Hero Banner */}
             <div className="relative overflow-hidden rounded-xl h-[400px] sm:h-[500px] mb-4 sm:mb-16 shadow-xl group mt-20 sm:mt-24">
                 {/* Main slider container */}

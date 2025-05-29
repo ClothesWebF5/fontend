@@ -2,16 +2,19 @@ import { Popover, Transition } from "@headlessui/react";
 import { Bell, ChevronDown, Heart, History, LogOut, Menu, Package, Search, Settings, ShoppingCart, User, UserRound, X } from "lucide-react";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { findProductUser } from "../../../../helpers/findProductUser";
 import RenderCategoryTree from "../../../../helpers/treeCategory.user";
+import { Introspect } from "../../../../hooks/introspect";
 import { ListCategory } from "../../../../hooks/listCategory";
+import { updateCart } from "../../../../services/Client/shopping.service";
 import { handleLogout } from "../../../../view/auth/logout";
 import { addCart, removeItem } from "../../../action/index.action";
-import { Introspect } from "../../../../hooks/introspect";
-import { updateCart } from "../../../../services/Client/shopping.service";
+import { toast, ToastContainer } from "react-toastify";
+import { notification } from "../../../../helpers/toast";
 
 export default function Header({ headerRef }) {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const isFirstRun = useRef(true);
     const { categories } = ListCategory();
@@ -41,6 +44,14 @@ export default function Header({ headerRef }) {
         }));
     }
 
+    const handleNavigate = () => {
+        if (!localStorage.getItem("accessToken")) {
+            notification(toast, "Vui lòng đăng nhập để thực hiện chức năng này");
+            return;
+        }
+        navigate("/payment");
+    }
+
     const closeCart = useCallback(() => {
         setIsClosing(true); // Ẩn panel ngay lập tức
         requestAnimationFrame(() => {
@@ -62,7 +73,7 @@ export default function Header({ headerRef }) {
     }, [menuOpen, categoryMenuOpen]);
 
     const navigation = [
-        { name: "Trang chủ", href: "#" },
+        { name: "Trang chủ", href: "/" },
         { name: "Về chúng tôi", href: "#" },
         { name: "Tin tức", href: "#" },
         { name: "Liên hệ", href: "#" },
@@ -100,19 +111,24 @@ export default function Header({ headerRef }) {
             }
         }))
     }
+    const isValid = Introspect();
     useEffect(() => {
         if (isFirstRun.current) {
             isFirstRun.current = false;
             return;
         }
         const fetchApi = async () => {
-            const res = await updateCart(cart);
+            if (isValid) {
+                const res = await updateCart(cart);
+            }
         }
         fetchApi();
     }, [cart]);
+
+
     return (
         <>
-
+            <ToastContainer position="top-center" autoClose={2000} pauseOnHover={false} />
             <header className="fixed top-0 left-0 w-full z-50 bg-white" ref={headerRef}>
                 <div className="border-b border-gray-100">
                     <div className="flex items-center justify-between px-4 md:px-6 py-4 max-w-7xl mx-auto">
@@ -331,11 +347,11 @@ export default function Header({ headerRef }) {
                                                                     <User color="#2e0a17" />
                                                                 </span> Thông tin tài khoản
                                                             </a>
-                                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <Link to={"/order"} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                                 <span className="mr-3">
                                                                     <Package color="#bebb60" />
                                                                 </span> Đơn hàng của tôi
-                                                            </a>
+                                                            </Link>
                                                             <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                                 <span className="mr-3">
                                                                     <Heart color="#f00a0a" />
@@ -655,7 +671,9 @@ export default function Header({ headerRef }) {
                                     Xem giỏ hàng
                                 </button>
                             </Link>
-                            <button className="w-full py-3 mt-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 text-base font-semibold transition-all duration-200">
+                            <button
+                                onClick={handleNavigate}
+                                className="w-full py-3 mt-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 text-base font-semibold transition-all duration-200">
                                 Thanh toán
                             </button>
                         </div>
