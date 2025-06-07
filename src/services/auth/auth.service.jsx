@@ -7,6 +7,7 @@ export const verifyToken = async (data) => {
 
 export const getProfile = async () =>{
     const res = await get("auth/profile");
+    console.log("getProfile", res);
     return res;
 }
 

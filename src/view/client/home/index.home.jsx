@@ -210,7 +210,7 @@ export default function Home() {
                                 <div className="absolute w-40 sm:w-80 h-40 sm:h-80 rounded-full bg-gradient-to-tr from-pink-100 to-purple-100 shadow-xl hidden sm:block" />
                                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500">
                                     <img
-                                        src={img}
+                                        src={"http://res.cloudinary.com/dq4guha5o/image/upload/88ba657e-6587-4afd-9373-295fb7819c07_ao-thun-xanh-reu-removebg-preview"}
                                         alt={`Fashion Collection ${index + 1}`}
                                         className="max-h-[180px] sm:max-h-[420px] w-auto object-contain drop-shadow-xl"
                                     />

@@ -21,7 +21,7 @@ import ShoppingCart from "../../view/client/shopping/index.shopping.jsx";
 import Payment from "../../view/client/payment/index.payment.jsx";
 import PaymentCallback from "../../view/client/payment/callBack.payment.jsx";
 import Order from "../../view/client/order/index.order.jsx";
-
+import Favorite from "../../view/client/user/favorite.jsx";
 
 export const router = [
     {
@@ -41,7 +41,7 @@ export const router = [
                 element: <Home />
             },
             {
-                path: "user/infor",
+                path: "infor",
                 element: <Infor />
             },
             {
@@ -59,6 +59,10 @@ export const router = [
             {
                 path: "order",
                 element: <Order />
+            },
+            {
+                path:"favorite",
+                element:<Favorite />
             }
         ]
     },

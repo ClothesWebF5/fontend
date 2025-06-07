@@ -25,6 +25,7 @@ export default function Header({ headerRef }) {
     const infor = Object.keys(useSelector(state => state.infor)).length > 0 ? useSelector(state => state.infor) : null;
 
     const cart = useSelector(state => state.cart);
+    const favorite = useSelector(state => state.favorite);
 
 
     const totalPrice = cart.reduce((total, item) => total + Math.round(item.price * (1 - item.percent / 100)) * item.quantity, 0)
@@ -243,7 +244,8 @@ export default function Header({ headerRef }) {
                                 <Popover className="relative hidden md:block">
                                     {({ open }) => (
                                         <>
-                                            <Popover.Button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 focus:outline-none">
+                                       
+                                        <Popover.Button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 focus:outline-none">
                                                 <div className="relative">
                                                     <Bell className="w-5 h-5" />
                                                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium">
@@ -251,6 +253,8 @@ export default function Header({ headerRef }) {
                                                     </span>
                                                 </div>
                                             </Popover.Button>
+                                        
+                                            
                                             <Transition
                                                 as={Fragment}
                                                 enter="transition ease-out duration-200"
@@ -342,22 +346,22 @@ export default function Header({ headerRef }) {
                                                             </div>
                                                         </div>
                                                         <div className="py-2">
-                                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <Link to={"/infor"} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                                 <span className="mr-3 ">
                                                                     <User color="#2e0a17" />
                                                                 </span> Thông tin tài khoản
-                                                            </a>
+                                                            </Link>
                                                             <Link to={"/order"} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                                 <span className="mr-3">
                                                                     <Package color="#bebb60" />
                                                                 </span> Đơn hàng của tôi
                                                             </Link>
-                                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <Link to={"/favorite"} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                                 <span className="mr-3">
                                                                     <Heart color="#f00a0a" />
                                                                 </span> Sản phẩm yêu thích
                                                                 <span className="ml-auto bg-gray-100 text-xs px-2 py-0.5 rounded-full">8</span>
-                                                            </a>
+                                                            </Link>
                                                             <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                                 <span className="mr-3">
                                                                     <History color="#0acaf0" />
@@ -403,8 +407,12 @@ export default function Header({ headerRef }) {
                                 )}
                             </Popover>
 
-                            <button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 hidden md:block">
-                                <Heart className="w-5 h-5" />
+                            <button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 hidden md:block" onClick={()=>navigate('/favorite')}>
+                                <Heart className="w-5 h-5" style={{position:'relative',top:'10px'}} />
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold"
+                                 style={{position:'relative',top:'-24px',right:'-10px'}}>
+                                       {favorite.length}
+                                </span>
                             </button>
 
                             <div className="relative">

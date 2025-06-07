@@ -4,14 +4,14 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { login, withGoogleOrFacebook } from "../../services/Client/user.service";
+import { addToFavorite, login, withGoogleOrFacebook } from "../../services/Client/user.service";
 import { notification } from "../../helpers/toast";
 import { jwtDecode } from "jwt-decode";
 import { getProfile } from "../../services/auth/auth.service";
 import { useDispatch, useSelector } from "react-redux";
 import { createCart, infor as profile } from "../../components/action/index.action";
 import { addToCart, getCart } from "../../services/Client/shopping.service";
-
+import { getFavorite } from "../../services/Client/user.service";
 function Login() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +19,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart);
+    const favorite = useSelector(state => state.favorite);
 
     const loginWithProvider = async (type) => {
         try {
@@ -57,6 +58,17 @@ function Login() {
                             if (getCartUser.status == 200) {
                                 localStorage.setItem('cart', JSON.stringify(getCartUser.data.result));
                                 dispatch(createCart(getCartUser.data.result));
+                                navigate("/");
+                            }
+                        }
+                        const res2 = await addToFavorite(favorite);
+                        console.log("kkk: ", res2);
+                        if (res2.status == 200) {
+                            const getFavoriteUser = await getFavorite();
+                            console.log("jj:", getFavoriteUser);
+                            if (getFavoriteUser.status == 200) {
+                                localStorage.setItem('favorite', JSON.stringify(getFavoriteUser.data.result));
+                                dispatch(creatFavorite(getFavoriteUser.data.result));
                                 navigate("/");
                             }
                         }

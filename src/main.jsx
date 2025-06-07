@@ -13,6 +13,7 @@ root.render(
     <Provider store={store}>
       <ThemeProvider storageKey="theme">
         <App />
+        
       </ThemeProvider>
     </Provider>
   </BrowserRouter>

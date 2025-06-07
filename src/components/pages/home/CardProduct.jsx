@@ -1,15 +1,20 @@
 import { Eye, Heart, RefreshCwIcon, ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addCart } from "../../action/index.action";
+import { addCart, addFavorite } from "../../action/index.action";
 import { notification } from "../../../helpers/toast";
 import { toast } from "react-toastify";
+import { addToFavorite, checkFavoriteExist, updateFavorite } from "../../../services/Client/user.service";
+import { useSelector } from "react-redux";
+
 
 function CardProduct({ product }) {
 
     const [hoveredCard, setHoveredCard] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
+    const products = useSelector(state => state.favorite);
+    const profile = useSelector(state => state.infor);
 
     // Lấy danh sách size duy nhất từ details
     const sizes = [...new Set(product.details.map((detail) => detail.size.name))];
@@ -81,6 +86,60 @@ function CardProduct({ product }) {
         dispatch(addCart(cartItem));
         notification(toast, "Thêm sản phẩm thành công", "success");
     }
+    const handleAddFavorite = (productId) => async () => {
+        console.log("profile:", profile);
+        console.log("Thông tin product click: ",product);
+        console.log("Slug cua sản phẩm:", product.slug);
+        const favoriteItem = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        slug: product.slug,
+        percent: discountPercent,
+        image: {
+            id: currentImage?.id,
+            src: currentImage?.src
+        },
+        color: {
+            id: selectedColor?.id,
+            name: selectedColor?.name,
+            hex: selectedColor?.hex
+        },
+        size: {
+            id: selectedDetail?.size.id,
+            name: selectedDetail?.size.name
+        },
+        stock: selectedDetail.stock,
+        quantity: 1
+    };
+
+    dispatch(addFavorite(favoriteItem)); // Thêm vào redux
+
+    try {
+    
+        setTimeout(async () => {
+            const updatedFavorites = JSON.parse(localStorage.getItem('favorite')) || [];
+            const res = await checkFavoriteExist();
+            console.log("Kiem tra xem da ton tai chua:", res.data);
+            if(res.data){
+                await updateFavorite(updatedFavorites);
+
+            }else{
+                 
+                 await addToFavorite([favoriteItem]);
+
+            }
+            
+           
+            notification(toast, "Thêm sản phẩm yêu thích thành công", "success");
+        }, 100);
+
+    } catch (error) {
+        console.error("Lỗi khi gửi lên backend:", error);
+        notification(toast, "Lỗi khi lưu sản phẩm yêu thích", "error");
+    }
+    };
+
 
     return (
         <div
@@ -99,7 +158,7 @@ function CardProduct({ product }) {
             {/* Product Image */}
             <div className="relative h-64 w-full overflow-hidden">
                 <img
-                    src={currentImage.src}
+                    src={currentImage.src || ""}
                     alt={product.name}
                     className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out group-hover:scale-110"
                 />
@@ -107,6 +166,7 @@ function CardProduct({ product }) {
                 {/* Action Buttons */}
                 <div className="absolute right-2 top-2 flex flex-col gap-2">
                     <button
+                        onClick={handleAddFavorite(product.id)}
                         className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 ${hoveredCard === product.id
                             ? "translate-x-0 opacity-100"
                             : "translate-x-12 opacity-0"

@@ -16,7 +16,7 @@ function LayoutUser() {
     return (
         <>
 
-            <Header headerRef={headerRef} />
+            <Header headerRef={headerRef} /> 
             <div style={{ marginTop: offset }} className="w-[90%] mx-auto">
                 <Outlet />
             </div>
