@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Footer from "./footer/index.footer";
 import Header from "./header/index.header";
 import { useEffect, useRef, useState } from "react";
+import Chatbot from "../../../view/client/chatbot/index.chatbot";
 
 function LayoutUser() {
     const headerRef = useRef(null);
@@ -18,6 +19,7 @@ function LayoutUser() {
 
             <Header headerRef={headerRef} />
             <div style={{ marginTop: offset }} className="w-[90%] mx-auto">
+                <Chatbot />
                 <Outlet />
             </div>
             <Footer />

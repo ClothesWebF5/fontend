@@ -4,9 +4,10 @@ import { useDispatch } from "react-redux";
 import { addCart } from "../../action/index.action";
 import { notification } from "../../../helpers/toast";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 function CardProduct({ product }) {
-
+    
     const [hoveredCard, setHoveredCard] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
@@ -82,6 +83,8 @@ function CardProduct({ product }) {
         notification(toast, "Thêm sản phẩm thành công", "success");
     }
 
+    
+
     return (
         <div
             key={product.id}
@@ -114,14 +117,17 @@ function CardProduct({ product }) {
                     >
                         <Heart size={18} className="text-gray-600" />
                     </button>
-                    <button
-                        className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-75 ${hoveredCard === product.id
-                            ? "translate-x-0 opacity-100"
-                            : "translate-x-12 opacity-0"
-                            }`}
-                    >
-                        <Eye size={18} className="text-gray-600" />
-                    </button>
+                    <Link to={`/detail/${product.slug}`}>
+                        <button
+                           
+                            className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-75 ${hoveredCard === product.id
+                                ? "translate-x-0 opacity-100"
+                                : "translate-x-12 opacity-0"
+                                }`}
+                        >
+                            <Eye size={18} className="text-gray-600" />
+                        </button>
+                    </Link>
                     <button
                         className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-100 ${hoveredCard === product.id
                             ? "translate-x-0 opacity-100"

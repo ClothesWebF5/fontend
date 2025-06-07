@@ -158,7 +158,7 @@ const AdminProductTable = ({ onEdit }) => {
                       </td>
                       <td className="px-4 py-3 font-medium">{p.name}</td>
                       <td className="px-4 py-3">{p.category?.name || "Chưa rõ"}</td>
-                      <td className="px-4 py-3 text-center">2</td>
+                      <td className="px-4 py-3 text-center">{p.price.toLocaleString()}₫</td>
                       <td className="px-4 py-3 text-center">
                         <button onClick={() => handleViewPromotions(p)} className="text-blue-500 hover:underline text-sm">
                           Xem khuyến mại

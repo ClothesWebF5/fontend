@@ -143,9 +143,10 @@ export default function Header({ headerRef }) {
 
                         <div className="flex items-center">
                             <img
-                                src="https://themesflat.co/html/modave/images/logo/logo.svg"
+                                
+                                src="https://pos.nvncdn.com/a135ac-81120/store/20200723_uouW5nbd4a4NIQY2BcD3tuMN.jpg"
                                 alt="Logo"
-                                className="h-8 md:h-10"
+                                className="h-8 md:h-10 w-full"
                             />
                         </div>
 

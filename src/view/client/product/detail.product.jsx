@@ -1,8 +1,11 @@
 import { Check, Minus, Plus, RefreshCcw, ShieldCheck, ShoppingBag, Star, Truck } from "lucide-react";
-import { useState } from "react";
-import CardProduct from "../../../components/pages/home/CardProduct";
+import { useEffect, useState } from "react";
+import { dateTime } from "../../../helpers/convertTime";
+import { detailProduct } from "../../../services/Client/product.service";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
+
+import { notification } from "antd";
 
 // Import Swiper styles
 import 'swiper/css';
@@ -12,42 +15,147 @@ import 'swiper/css/thumbs';
 
 
 // import required modules
+import { ExclamationCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
+import { addCart } from "../../../components/action/index.action";
+import { ListSize } from "../../../hooks/listSize";
 
 
 const ProductDetail = () => {
+    const [api, contextHolder] = notification.useNotification();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { sizes: listSizes } = ListSize();
+    const { slug } = useParams();
+    const [item, setItem] = useState({});
+    const [selectedColor, setSelectedColor] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
+    const sizes = [...new Set(item.details?.map((detail) => detail.size.name))];
+    const colors = [
+        ...new Map(
+            item.details
+                ?.filter((detail) => detail.stock > 0)
+                ?.map((detail) => [
+                    detail.color.id,
+                    {
+                        id: detail.color.id,
+                        name: detail.color.name,
+                        hex: detail.color.hexCode,
+                    },
+                ])
+        ).values(),
+    ];
+    const handleAddToCart = (action) => {
+        const currentImage = item.images?.find(ite => ite.colorId === getSelectedDetail().color.id);
+        const cartItem = {
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            percent: item.discounts[0]?.percent || 0,
+            image: {
+                id: currentImage?.id,
+                src: currentImage?.src
+            },
+            color: {
+                id: selectedColor?.id,
+                name: selectedColor?.name,
+                hex: selectedColor?.hex
+            },
+            size: {
+                id: getSelectedDetail().size.id,
+                name: getSelectedDetail().size.name
+            },
+            stock: getSelectedDetail().stock,
+            quantity: quantity
+        };
+        dispatch(addCart(cartItem));
+        if (action === "buy") {
+            console.log("OK");
+            if (localStorage.getItem("accessToken")) {
+                navigate("/payment");
+                return;
+            }
+            api.open({
+                message: (
+                    <div style={{ color: '#fff' }}>
+                        Thông báo
+                    </div>
+                ),
+                description: (
+                    <div style={{ color: '#fff' }}>
+                        Vui lòng đăng nhập để thực hiện chức năng này.
+                    </div>
+                ),
+                icon: <ExclamationCircleOutlined style={{ color: '#fff', fontSize: 20 }} />,
+                style: {
+                    backgroundColor: '#ff4d4f', // đỏ tươi
+                    borderRadius: 8,
+                    padding: 16,
+                },
+                closeIcon: false,
+                duration: 1.5,
+                placement: 'topRight',
+            });
+        } else {
+            notification(toast, "Thêm sản phẩm thành công", "success");
+        }
+    }
+    useEffect(() => {
+        // Mặc định chọn màu đầu tiên nếu chưa chọn
+        const defaultColor = colors[0] || null;
+
+        // Mặc định chọn size đầu tiên nếu chưa chọn
+        const defaultSize = sizes[0] || null;
+
+        // Nếu chưa chọn thì set mặc định
+        if (!selectedColor && defaultColor) setSelectedColor(defaultColor);
+        if (!selectedSize && defaultSize) setSelectedSize(defaultSize);
+    }, [item])
+
+    const getSelectedDetail = () => {
+        return item.details?.find(
+            (detail) =>
+                detail.color.id === selectedColor?.id &&
+                detail.size.name === selectedSize
+        );
+    }
+
+    const [mainSwiper, setMainSwiper] = useState(null); // lưu instance swiper chính
+
+    // Khi selectedColor thay đổi => chuyển slide Swiper tương ứng
+    useEffect(() => {
+        if (!mainSwiper || !selectedColor || !item.images) return;
+
+        // Tìm index ảnh đầu tiên có colorId = selectedColor.id
+        const index = item.images.findIndex(img => img.colorId === selectedColor.id);
+
+        if (index !== -1) {
+            // Swiper trong loop mode: cần chú ý vì index nội bộ của Swiper có thể khác
+            // Dùng slideToLoop để tự xử lý index với loop=true
+            mainSwiper.slideToLoop(index);
+        }
+    }, [selectedColor, mainSwiper, item.images]);
+
+
+
+    useEffect(() => {
+        const fetchDetailProuct = async () => {
+            const res = await detailProduct(slug);
+            if (res.status === 200) {
+                setItem(res.data.result);
+            }
+        }
+        fetchDetailProuct();
+    }, []);
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState("description");
     const [isFavorite, setIsFavorite] = useState(false);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [selectedColor, setSelectedColor] = useState(null);
-    const [selectedSize, setSelectedSize] = useState(null);
     const [showGuide, setShowGuide] = useState(false);
-    const colors = ["#e0e0e0", "#264653", "#f4a261"];
-    const sizes = ["S", "M", "L", "XL"];
 
-    const sizeGuide = [
-        { name: "S", description: "Dành cho người cao dưới 1m60, dưới 50kg" },
-        { name: "M", description: "Chiều cao 1m60 - 1m70, nặng 50 - 60kg" },
-        { name: "L", description: "Chiều cao 1m70 - 1m75, nặng 60 - 70kg" },
-        { name: "XL", description: "Trên 1m75 hoặc trên 70kg" },
-    ];
-
-    const [products] = useState([
-        { id: 1, name: 'Military Winter Jacket', rating: 4, price: '$34.00', oldPrice: '$50.00', image: '/api/placeholder/80/100', category: 'JACKET' },
-        { id: 2, name: 'Pure Garment Dyed Cotton Shirt', rating: 5, price: '$45.00', oldPrice: '$60.00', image: '/api/placeholder/80/100', category: 'SHIRT' },
-        { id: 3, name: 'Mens Flat Cap Jacket', rating: 3, price: '$59.00', oldPrice: '$75.00', image: '/api/placeholder/80/100', category: 'JACKET' },
-        { id: 4, name: 'Mens Flower Print Shirt', rating: 4, price: '$45.00', oldPrice: '$60.00', image: '/api/placeholder/80/100', category: 'SHIRT' },
-        { id: 5, name: 'Elegant Mens Leather Boots', rating: 5, price: '$95.00', oldPrice: '$115.00', image: '/api/placeholder/80/100', category: 'SHOES' },
-        { id: 6, name: 'Pocket Watch Leather Pouch', rating: 4, price: '$108.00', oldPrice: '$120.00', image: '/api/placeholder/80/100', category: 'JEWELRY' },
-        { id: 7, name: 'Apple Watch Series 5 40mm', rating: 5, price: '$300.00', oldPrice: '$350.00', image: '/api/placeholder/80/100', category: 'TECHNOLOGY' },
-        { id: 8, name: 'Womens Party Dress Shoes', rating: 4, price: '$125.00', oldPrice: '$150.00', image: '/api/placeholder/80/100', category: 'WOMEN' },
-        { id: 9, name: 'Mens Winter Jacket', rating: 4, price: '$95.00', oldPrice: '$120.00', image: '/api/placeholder/80/100', category: 'JACKET' },
-        { id: 10, name: 'Sports & Running Shoes - Black', rating: 5, price: '$59.00', oldPrice: '$80.00', image: '/api/placeholder/80/100', category: 'SHOES' },
-        { id: 11, name: 'Mens Leather Formal Wear Shoes', rating: 4, price: '$59.00', oldPrice: '$80.00', image: '/api/placeholder/80/100', category: 'SHOES' },
-        { id: 12, name: 'Pastel Basic T-shirt', rating: 5, price: '$29.00', oldPrice: '$39.00', image: '/api/placeholder/80/100', category: 'WOMEN' },
-    ]);
     const features = [
         { icon: <Truck size={16} />, text: "Giao hàng miễn phí cho đơn hàng từ 300.000₫" },
         { icon: <ShieldCheck size={16} />, text: "Bảo hành chất lượng 30 ngày" },
@@ -68,6 +176,7 @@ const ProductDetail = () => {
 
     return (
         <>
+            {contextHolder}
             <div className="max-w-7xl mx-auto p-4 font-sans">
                 <div className="grid md:grid-cols-2 gap-8">
                     {/* Left: Product Images */}
@@ -83,36 +192,15 @@ const ProductDetail = () => {
                             thumbs={{ swiper: thumbsSwiper }}
                             modules={[FreeMode, Navigation, Thumbs]}
                             className="mySwiper2"
+                            onSwiper={setMainSwiper}  // lưu instance swiper chính
                         >
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-1.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-2.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-3.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-4.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-5.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-6.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-7.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-8.jpg" />
-                            </SwiperSlide>
-
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-10.jpg" />
-                            </SwiperSlide>
+                            {item.images?.map((img, idx) => (
+                                <SwiperSlide key={idx}>
+                                    <img src={img.src} alt={`slide-${idx}`} />
+                                </SwiperSlide>
+                            ))}
                         </Swiper>
+
                         <Swiper
                             onSwiper={setThumbsSwiper}
                             loop={true}
@@ -123,59 +211,41 @@ const ProductDetail = () => {
                             modules={[FreeMode, Navigation, Thumbs]}
                             className="mySwiper"
                         >
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-1.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-2.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-3.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-4.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-5.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-6.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-7.jpg" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-8.jpg" />
-                            </SwiperSlide>
-
-                            <SwiperSlide>
-                                <img src="https://swiperjs.com/demos/images/nature-10.jpg" />
-                            </SwiperSlide>
+                            {item.images?.map((img, idx) => (
+                                <SwiperSlide key={idx}>
+                                    <img src={img.src} alt={`thumb-${idx}`} />
+                                </SwiperSlide>
+                            ))}
                         </Swiper>
                     </div>
-
                     {/* Right: Product Details */}
                     <div className="space-y-6">
                         <div>
                             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                                Áo Thun Nữ Cao Cấp Premium Cotton Sure Fashion
+                                {item.name}
                             </h1>
                             <div className="flex items-center mt-2 space-x-4">
                                 <div className="flex items-center">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <Star key={star} size={18} className="text-yellow-400 fill-yellow-400" />
                                     ))}
-                                    <span className="ml-2 text-sm text-gray-600">(7 đánh giá)</span>
+                                    <span className="ml-2 text-sm text-gray-600">({item.feedbacks?.length || 0} đánh giá)</span>
                                 </div>
-                                <span className="text-sm text-gray-500">Đã bán: 213</span>
+                                <span className="text-sm text-gray-500">Số lượng: {item.quantity}</span>
                             </div>
                         </div>
 
                         {/* Price */}
                         <div className="flex items-baseline space-x-3">
-                            <span className="text-2xl font-bold text-red-600">{formatPrice(149000)}</span>
-                            <span className="text-lg text-gray-500 line-through">{formatPrice(290000)}</span>
-                            <span className="text-sm font-medium px-2 py-1 bg-red-100 text-red-600 rounded">-49%</span>
+                            {item.discounts?.length > 0 ? (
+                                <>
+                                    <span className="text-2xl font-bold text-red-600">{formatPrice(item.discounts?.length > 0 ? Math.round(item.price * (1 - item.discounts[0].percent / 100)) : 0)}</span>
+                                    <span className="text-lg text-gray-500 line-through">{formatPrice(item.price)}</span>
+                                    <span className="text-sm font-medium px-2 py-1 bg-red-100 text-red-600 rounded">{item.discounts?.length > 0 ? item.discounts[0].percent : 0}%</span>
+                                </>
+                            ) : (
+                                <span className="text-2xl font-bold text-red-600">{formatPrice(item.price)}</span>
+                            )}
                         </div>
 
                         {/* Features */}
@@ -196,11 +266,11 @@ const ProductDetail = () => {
                                 <button
                                     key={index}
                                     onClick={() => setSelectedColor(color)}
-                                    className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${selectedColor === color ? "border-gray-600" : "border-gray-300"
+                                    className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${selectedColor === color ? "border-gray-600" : "border-gray-50"
                                         }`}
-                                    style={{ backgroundColor: color }}
+                                    style={{ backgroundColor: color.hex }}
                                 >
-                                    {selectedColor === color && <Check size={12} className="text-white" />}
+                                    {selectedColor?.id === color?.id && <Check size={16} className="text-white" />}
                                 </button>
                             ))}
                         </div>
@@ -231,54 +301,62 @@ const ProductDetail = () => {
 
 
                         {/* Quantity */}
-                        <div className="mt-6">
-                            <h3 className="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">
-                                Số lượng
-                            </h3>
-                            <div className="flex items-center gap-6">
-                                <div className="flex items-center border border-gray-300 rounded-full overflow-hidden shadow-sm">
-                                    <button
-                                        onClick={decrementQuantity}
-                                        className="px-3 py-2  text-gray-600 transition"
-                                    >
-                                        <Minus size={16} />
-                                    </button>
-                                    <input
-                                        type="text"
-                                        readOnly
-                                        value={quantity}
-                                        className="w-10 text-center py-2 bg-white text-gray-800 text-sm font-medium focus:outline-none"
-                                    />
-                                    <button
-                                        onClick={() => setQuantity(quantity + 1)}
-                                        className="px-3 py-2  text-gray-600 transition"
-                                    >
-                                        <Plus size={16} />
-                                    </button>
-                                </div>
+                        {
+                            getSelectedDetail() ? (
+                                <div className="mt-6">
+                                    <div className="flex items-center gap-6">
+                                        <div className="flex items-center border border-gray-300 rounded-full overflow-hidden shadow-sm">
+                                            <button
+                                                onClick={decrementQuantity}
+                                                className="px-3 py-2  text-gray-600 transition"
+                                            >
+                                                <Minus size={16} />
+                                            </button>
+                                            <input
+                                                min="1"
+                                                type="number"
+                                                readOnly
+                                                value={quantity}
+                                                className="w-10 text-center py-2 bg-white text-gray-800 text-sm font-medium focus:outline-none"
+                                            />
+                                            <button
+                                                onClick={() => quantity < getSelectedDetail().stock && setQuantity(quantity + 1)}
+                                                className="px-3 py-2  text-gray-600 transition"
+                                            >
+                                                <Plus size={16} />
+                                            </button>
+                                        </div>
 
-                                <span className="text-sm text-gray-500">
-                                    Còn lại: <span className="font-semibold text-gray-700">86</span> sản phẩm
-                                </span>
-                            </div>
-                        </div>
+                                        <span className="text-sm text-gray-500">
+                                            Còn lại: <span className="font-semibold text-gray-700">{getSelectedDetail().stock}</span> sản phẩm
+                                        </span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-red-500 text-md">Không có sản phẩm với lựa chọn này</div>
+                            )
+                        }
 
 
                         {/* Total */}
                         <div className="py-3 border-t border-b border-gray-200">
                             <div className="flex justify-between items-center">
                                 <span className="text-lg font-medium text-gray-700">Tạm tính:</span>
-                                <span className="text-xl font-bold text-red-600">{formatPrice(149000 * quantity)}</span>
+                                <span className="text-xl font-bold text-red-600">{formatPrice(item.price * quantity)}</span>
                             </div>
                         </div>
 
                         {/* Action Buttons */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <button className="flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors">
+                            <button
+                                onClick={() => handleAddToCart("buy")}
+                                className="flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors">
                                 <ShoppingBag size={20} />
                                 <span>Mua ngay</span>
                             </button>
-                            <button className="flex items-center justify-center space-x-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors">
+                            <button
+                                onClick={() => handleAddToCart("add")}
+                                className="flex items-center justify-center space-x-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-colors">
                                 <Plus size={20} />
                                 <span>Thêm vào giỏ</span>
                             </button>
@@ -293,7 +371,7 @@ const ProductDetail = () => {
                             {[
                                 { id: "description", label: "Mô tả sản phẩm" },
                                 { id: "details", label: "Thông tin chi tiết" },
-                                { id: "reviews", label: "Đánh giá (7)" }
+                                { id: "reviews", label: `Đánh giá (${item.feedbacks?.length || 0})` }
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
@@ -373,42 +451,12 @@ const ProductDetail = () => {
 
                         {activeTab === "reviews" && (
                             <div className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="text-3xl font-bold">4.9</div>
-                                        <div>
-                                            <div className="flex">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <Star key={star} size={20} className="text-yellow-400 fill-yellow-400" />
-                                                ))}
-                                            </div>
-                                            <div className="text-sm text-gray-500">7 đánh giá</div>
-                                        </div>
-                                    </div>
-                                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                                        Viết đánh giá
-                                    </button>
-                                </div>
-
                                 {/* Sample reviews */}
-                                {[
-                                    {
-                                        name: "Nguyễn Thị Hương",
-                                        date: "12/04/2025",
-                                        rating: 5,
-                                        content: "Áo đẹp, chất vải mềm mịn, thoáng mát. Form áo chuẩn, mặc tôn dáng. Đặt hàng lần đầu ở shop mà ưng ý lắm nha. Sẽ ủng hộ tiếp!"
-                                    },
-                                    {
-                                        name: "Trần Minh Anh",
-                                        date: "05/04/2025",
-                                        rating: 5,
-                                        content: "Đã mua nhiều lần, chất lượng luôn ổn định. Mình cao 1m58, nặng 48kg mặc size M vừa xinh."
-                                    }
-                                ].map((review, index) => (
+                                {item.feedbacks?.map((review, index) => (
                                     <div key={index} className="border-b pb-4">
                                         <div className="flex justify-between items-center">
                                             <div className="font-medium">{review.name}</div>
-                                            <div className="text-sm text-gray-500">{review.date}</div>
+                                            <div className="text-sm text-gray-500">{dateTime(review.time)}</div>
                                         </div>
                                         <div className="flex my-1">
                                             {[1, 2, 3, 4, 5].map((star) => (
@@ -419,7 +467,7 @@ const ProductDetail = () => {
                                                 />
                                             ))}
                                         </div>
-                                        <p className="text-gray-700 text-sm mt-1">{review.content}</p>
+                                        <p className="text-gray-700 text-sm mt-1">{review.description}</p>
                                     </div>
                                 ))}
                             </div>
@@ -461,7 +509,7 @@ const ProductDetail = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {sizeGuide.map((size, index) => (
+                                    {listSizes.map((size, index) => (
                                         <tr
                                             key={index}
                                             className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"

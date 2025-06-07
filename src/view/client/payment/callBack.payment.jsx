@@ -40,7 +40,7 @@ function PaymentCallback() {
     }, []);
     return (
         <>
-            ok
+            {/* ok */}
         </>
     );
 }
