@@ -1,7 +1,7 @@
 export const cart = (state = JSON.parse(localStorage.getItem("cart")) || [], action) => {
     switch (action.type) {
 
-        case "createCart": {
+        case "createCart": { 
             return action.cartItem;
         }
 

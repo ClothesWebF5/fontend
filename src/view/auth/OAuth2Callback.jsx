@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { sendCode } from "../../services/Client/user.service";
+import { addToFavorite, getFavorite, sendCode } from "../../services/Client/user.service";
 import { notification } from "../../helpers/toast";
 import { jwtDecode } from "jwt-decode";
 import { getProfile } from "../../services/auth/auth.service";
 import { useDispatch, useSelector } from "react-redux";
-import { infor as profile, createCart } from "../../components/action/index.action";
+import { infor as profile, createCart, creatFavorite } from "../../components/action/index.action";
 import { addToCart, getCart } from "../../services/Client/shopping.service";
 
 function OAuth2Callback() {
@@ -14,6 +14,7 @@ function OAuth2Callback() {
     const { type } = useParams();
     const dispatch = useDispatch();
     const cart = useSelector(state => state.cart);
+    const favorite = useSelector(state => state.favorite);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -39,9 +40,21 @@ function OAuth2Callback() {
                                     dispatch(createCart(getCartUser.data.result));
                                     navigate("/");
                                 }
+                                
+                            }
+                            const res2 = await addToFavorite(favorite);
+                            console.log("kkk: ",res2);
+                            if(res2.status == 200){
+                                const getFavoriteUser = await getFavorite();
+                                console.log("j:",getFavoriteUser);
+                                if(getFavoriteUser.status == 200){
+                                    localStorage.setItem('favorite',JSON.stringify(getFavoriteUser.data.result));
+                                    dispatch(creatFavorite(getFavoriteUser.data.result));
+                                    navigate("/");
+                                }
                             }
                         } else {
-                            navigate("/admin/dashboard")
+                            navigate("/admin/dashboard");
                         };
                     } else {
                         notification(toast, "Không lấy được thông tin người dùng");
