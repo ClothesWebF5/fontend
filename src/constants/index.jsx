@@ -48,6 +48,16 @@ export const navbarLinks = [
         ],
     },
     {
+        title: "Orders",
+        links: [
+            {
+                label: "Orders",
+                icon: ShoppingBag,
+                path: `${config.prefixAdmin}/ordersAdmin`,
+            }
+        ],
+    },
+    {
         title: "Products",
         links: [
             {

@@ -21,6 +21,7 @@ import ShoppingCart from "../../view/client/shopping/index.shopping.jsx";
 import Payment from "../../view/client/payment/index.payment.jsx";
 import PaymentCallback from "../../view/client/payment/callBack.payment.jsx";
 import Order from "../../view/client/order/index.order.jsx";
+import OrdersAdmin from "../../view/admin/orders/index.orders.jsx";
 
 
 export const router = [
@@ -125,6 +126,10 @@ export const router = [
                     {
                         path: "new-product",
                         element: <CreateProduct />
+                    },
+                    {
+                        path: "ordersAdmin",
+                        element: <OrdersAdmin /> 
                     },
                 ]
             },

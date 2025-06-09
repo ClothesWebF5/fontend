@@ -160,7 +160,8 @@ const isPublicEnpoint = (path) => {
     "api/admin/categories",
     "api/products",
     "auth/social-login",
-    "auth/login/google"
+    "auth/login/google",
+    "api/admin/ordersAdmin"
   ].some(item => path.startsWith(item));
 };
 
