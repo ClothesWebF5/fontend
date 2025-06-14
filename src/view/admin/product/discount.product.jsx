@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createDiscount, deleteDiscount} from "../../../services/admin/discount.service";
+import { createDiscount, deleteDiscount } from "../../../services/admin/discount.service";
 import moment from "moment/moment";
 import { toast } from "react-toastify";
 import { notification } from "../../../helpers/toast";
@@ -30,6 +30,8 @@ const PromotionModal = ({ product, promotions, onClose, refreshPromotions }) => 
       if (res.status === 200) {
         setNewPromo({ ...newPromo, percent: "", start_date: "", end_date: "" });
         await refreshPromotions();
+      } else if (res.status === 403) {
+        notification(toast, "Không có quyền thực hiện chức năng này");
       } else {
         notification(toast, "Đã có lỗi xảy ra khi tạo khuyến mãi");
       }
@@ -37,13 +39,13 @@ const PromotionModal = ({ product, promotions, onClose, refreshPromotions }) => 
   };
 
   const handleDeletePromotion = async (id) => {
-      const res = await deleteDiscount(id);
-      if (res.status === 200) {
-        toast.success("Xoá thành công");
-        await refreshPromotions();
-      } else {
-        notification(toast, "Không thể xoá khuyến mãi");
-      }
+    const res = await deleteDiscount(id);
+    if (res.status === 200) {
+      toast.success("Xoá thành công");
+      await refreshPromotions();
+    } else {
+      notification(toast, "Không thể xoá khuyến mãi");
+    }
 
   };
 

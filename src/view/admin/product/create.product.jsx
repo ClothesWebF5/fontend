@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import ImageUploader from "../../../helpers/imageUploader";
-import { createProduct } from "../../../services/admin/product.service";
-import { listCategory } from "../../../services/admin/category.service";
-import { getColors, getSizes } from "../../../services/common/common.service";
-import TreeCategory from "../../../helpers/treeCategory.admin";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { notification } from "../../../helpers/toast";
-import slugify from "slugify";
 import { ToastContainer, toast } from "react-toastify";
+import slugify from "slugify";
+import ImageUploader from "../../../helpers/imageUploader";
+import { notification } from "../../../helpers/toast";
+import TreeCategory from "../../../helpers/treeCategory.admin";
 import { ListCategory } from "../../../hooks/listCategory";
+import { createProduct } from "../../../services/admin/product.service";
+import { getColors, getSizes } from "../../../services/common/common.service";
 
 function CreateProduct() {
     const [dataForm, setDataForm] = useState({});

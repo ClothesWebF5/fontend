@@ -10,7 +10,7 @@ export const getSizes = async () => {
     return res;
 }
 
-export const getProducts = async () => {
-    const res = await get("api/common/products");
+export const getCategories = async () => {
+    const res = await get("api/common/categories");
     return res;
 }

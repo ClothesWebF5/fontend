@@ -1,5 +1,5 @@
 import { verifyToken as verify, get, post } from "../../utils/request";
-
+    
 export const verifyToken = async (data) => {
     const res = await verify("auth/introspect", data);
     return res;   

@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import CardProduct from '../../../components/pages/home/CardProduct';
 import ProductSlider from "../../../components/pages/home/ProductSlide";
 import { ListCategory } from "../../../hooks/listCategory";
-import { homeJquery } from '../../../jquery/home.jquery';
+// import { homeJquery } from '../../../jquery/home.jquery';
 
 export default function Home() {
     const navigate = useNavigate();
@@ -43,9 +43,9 @@ export default function Home() {
     ];
 
 
-    useEffect(() => {
-        homeJquery();
-    }, [categories]);
+    // useEffect(() => {
+    //     homeJquery();
+    // }, [categories]);
 
     const [currentSlide, setCurrentSlide] = useState(0);
     const [currentDealSlide, setCurrentDealSlide] = useState(0);
@@ -291,11 +291,7 @@ export default function Home() {
                                     <li key={index} className="py-2 border-border-gray-100">
                                         <div className='flex justify-between items-center '>
                                             <div>
-                                                <span className="w-8 h-8 inline-block mr-2 bg-gray-200">
-                                                    <img src="http://res.cloudinary.com/dv6fjob4v/image/upload/553055ef-abc4-42e8-aafe-f3d0972152ec_bo-nu-rong-xam"
-                                                        className='w-full h-full object-cover'
-                                                    />
-                                                </span>
+
                                                 <span>{category.name}</span>
                                             </div>
                                             <span className="text-gray-400 cursor-pointer show-sub-category"><Plus size={16} /></span>
@@ -305,7 +301,7 @@ export default function Home() {
                                                 {category.children && category.children.length > 0 && category.children.map(sub => (
                                                     <div className="flex justify-between">
                                                         <span>{sub.name}</span>
-                                                        <span>{sub.children.length}</span>
+
                                                     </div>
                                                 ))}
                                             </div>
@@ -531,31 +527,28 @@ export default function Home() {
                         }
                     </div>
 
-        
+
+                    {/* Banner */}
                     {/* Banner */}
                     <div className="md:col-span-2 h-full">
-                        <div className="relative rounded-xl overflow-hidden h-full">
-                            <img
-                                src="https://res.cloudinary.com/dv6fjob4v/image/upload/v1717488000/banner-service.jpg"
-                                alt="Trải nghiệm khách hàng"
-                                className="object-cover w-full h-full"
-                            />
-                            <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center text-white px-6">
-                                <span className="bg-white text-black text-xs font-semibold px-4 py-1 rounded mb-4">
-                                    Trải nghiệm 5 <span className='text-yellow-400'>★</span>
+                        <div className="relative rounded-xl overflow-hidden h-full shadow bg-white">
+                            <div className="flex flex-col justify-center items-center text-center text-gray-800 px-6 h-full py-12 space-y-4">
+                                <span className="text-sm font-semibold text-pink-500 uppercase tracking-wide">
+                                    Ưu đãi trong tuần
                                 </span>
-                                <h3 className="text-3xl md:text-4xl font-bold drop-shadow">
-                                    Mua sắm dễ dàng – Hỗ trợ tận tâm
+                                <h3 className="text-3xl md:text-4xl font-bold leading-tight">
+                                    Miễn phí giao hàng toàn quốc
                                 </h3>
-                                <p className="text-sm md:text-base text-gray-200 mt-2 mb-6 drop-shadow">
-                                    Giao nhanh – Đổi trả miễn phí – Hỗ trợ đến 11PM
+                                <p className="text-sm md:text-base text-gray-600 max-w-xl">
+                                    Áp dụng cho mọi đơn hàng từ 300.000đ. Đặt hàng ngay để nhận tư vấn nhanh chóng và các chương trình khuyến mãi hấp dẫn!
                                 </p>
-                                <button className="bg-pink-500 hover:bg-pink-600 transition-colors text-white py-2 px-6 rounded-full font-semibold text-sm flex items-center shadow-md">
-                                    Khám phá ngay <ArrowRight size={16} className="ml-2" />
+                                <button className="bg-pink-500 hover:bg-pink-600 transition-all text-white py-2 px-8 rounded-full font-semibold text-sm flex items-center gap-2 shadow-md hover:scale-105">
+                                    Đặt hàng ngay <ArrowRight size={16} />
                                 </button>
                             </div>
                         </div>
                     </div>
+
 
                     {/* Services */}
                     <div className="md:col-span-1 space-y-6 h-full">

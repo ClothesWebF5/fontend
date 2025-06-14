@@ -125,11 +125,8 @@ export default function Header({ headerRef }) {
         }
         fetchApi();
     }, [cart]);
-
-
     return (
         <>
-            <ToastContainer position="top-center" autoClose={2000} pauseOnHover={false} />
             <header className="fixed top-0 left-0 w-full z-50 bg-white" ref={headerRef}>
                 <div className="border-b border-gray-100">
                     <div className="flex items-center justify-between px-4 md:px-6 py-4 max-w-7xl mx-auto">
@@ -241,7 +238,7 @@ export default function Header({ headerRef }) {
                                 )}
                             </Popover>
 
-                            {infor && (
+                            {/* {infor && (
                                 <Popover className="relative hidden md:block">
                                     {({ open }) => (
                                         <>
@@ -301,7 +298,7 @@ export default function Header({ headerRef }) {
                                         </>
                                     )}
                                 </Popover>
-                            )}
+                            )} */}
 
                             <Popover className="relative">
                                 {({ open }) => (
@@ -361,9 +358,9 @@ export default function Header({ headerRef }) {
                                                                 <span className="mr-3">
                                                                     <Heart color="#f00a0a" />
                                                                 </span> Sản phẩm yêu thích
-                                                                <span className="ml-auto bg-gray-100 text-xs px-2 py-0.5 rounded-full">8</span>
+                                                                {/* <span className="ml-auto bg-gray-100 text-xs px-2 py-0.5 rounded-full"></span> */}
                                                             </Link>
-                                                            <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            {/* <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                                 <span className="mr-3">
                                                                     <History color="#0acaf0" />
                                                                 </span> Lịch sử giao dịch
@@ -372,7 +369,7 @@ export default function Header({ headerRef }) {
                                                                 <span className="mr-3">
                                                                     <Settings color="#6e7a7c" />
                                                                 </span> Cài đặt tài khoản
-                                                            </a>
+                                                            </a> */}
                                                         </div>
                                                         <div className="p-3 border-t border-gray-100">
                                                             <button
