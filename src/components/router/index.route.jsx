@@ -23,11 +23,11 @@ import PaymentCallback from "../../view/client/payment/callBack.payment.jsx";
 import Order from "../../view/client/order/index.order.jsx";
 import OrderAdmin from "../../view/admin/order/index.order.jsx";
 import Favorite from "../../view/client/user/favorite.jsx";
-<<<<<<< HEAD
+
 import Forgot from "../../view/auth/forgot.jsx";
-=======
+
 import PrivateClient from "../../components/auth/client.auth.jsx";
->>>>>>> fix/ui-chatbot
+
 
 export const router = [
     {
