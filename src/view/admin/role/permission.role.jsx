@@ -11,17 +11,19 @@ const PermissionRole = () => {
     ['PRODUCT_VIEW', 'PRODUCT_ADD', 'PRODUCT_UPDATE', 'PRODUCT_DELETE'],
     ['ROLE_VIEW', 'ROLE_ADD', 'ROLE_UPDATE', 'ROLE_DELETE', 'ROLE_PERMISSION'],
     ['CATEGORY_VIEW', 'CATEGORY_ADD', 'CATEGORY_UPDATE', 'CATEGORY_DELETE'],
-    ['ACCOUNT_VIEW', 'ACCOUNT_ADD', 'ACCOUNT_UPDATE', 'ACCOUNT_DELETE']
+    ['ACCOUNT_VIEW', 'ACCOUNT_ADD', 'ACCOUNT_UPDATE', 'ACCOUNT_DELETE'],
+    ['ORDER_UPDATE', 'ORDER_DELETE']
   ];
 
   const title = [
     ['Xem', 'Thêm', 'Sửa', 'Xóa'],
     ['Xem', 'Thêm', 'Sửa', 'Xóa', 'Phân quyền'],
     ['Xem', 'Thêm', 'Sửa', 'Xóa'],
-    ['Xem', 'Thêm', 'Sửa', 'Xóa']
+    ['Xem', 'Thêm', 'Sửa', 'Xóa'],
+    ['Sửa', 'xóa']
   ];
 
-  const featureNames = ['Sản phẩm', 'Nhóm quyền', 'Danh mục', "Tài khoản"];
+  const featureNames = ['Sản phẩm', 'Nhóm quyền', 'Danh mục', "Tài khoản", "Đơn hàng"];
 
   const [permissionsData, setPermissionsData] = useState([]);
   const [roles, setRoles] = useState([]);

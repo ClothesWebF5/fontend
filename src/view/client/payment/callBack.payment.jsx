@@ -38,11 +38,7 @@ function PaymentCallback() {
         }
         fetchApi();
     }, []);
-    return (
-        <>
-            ok
-        </>
-    );
+    return null;
 }
 
 export default PaymentCallback;

@@ -3,14 +3,9 @@ import Swal from "sweetalert2";
 import { deleteAccount } from "../../../services/admin/account.service";
 
 function DeleteAccount({ reload, item, type = "desktop" }) {
-  const handleDelete = async (id) => {  
-      const res = await deleteAccount(id);
-      if (res.status === 200) {
-        reload();
-        return true; // Indicate success
-      } else {
-        return false; // Indicate failure (e.g., not 200 status)
-      }
+  const handleDelete = async (id) => {
+    const res = await deleteAccount(id);
+    return res.status;
   };
 
   const handleClick = () => {
@@ -26,13 +21,21 @@ function DeleteAccount({ reload, item, type = "desktop" }) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         const isDeleted = await handleDelete(item.id);
-        if (isDeleted) {
+        if (isDeleted == 200) {
           Swal.fire({
             title: "Đã cập nhật!",
             text: "Thay đổi trạng thái thành công.",
             icon: "success",
             timer: 1500,
             showConfirmButton: false
+          });
+          reload();
+        } else if (isDeleted == 403) {
+          Swal.fire({
+            title: "Lỗi",
+            text: "Không có quyền thực hiện chức năng này",
+            icon: "error",
+            confirmButtonText: "OK"
           });
         } else {
           Swal.fire({

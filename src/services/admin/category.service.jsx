@@ -1,11 +1,6 @@
 import { get, patch, post } from "../../utils/request"
 import { prefixAdmin } from "../../constants";
 
-export const listCategory = async () => {
-    const res = await get(`${prefixAdmin}/categories`);
-    return res;
-}
-
 export const createCategory = async (data) => {
     const res = await post(`${prefixAdmin}/categories`, data);
     return res;

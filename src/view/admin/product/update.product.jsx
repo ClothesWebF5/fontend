@@ -28,7 +28,7 @@ function UpdateProduct() {
     const { categories } = ListCategory();
     const [variants, setVariants] = useState([{ colorId: "", sizeId: "", stock: 0 }]);
     const [isLoading, setIsLoading] = useState(false);
-
+    console.log(colors, sizes);
     useEffect(() => {
         const fetchAll = async () => {
             setIsLoading(true);
