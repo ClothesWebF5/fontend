@@ -161,7 +161,10 @@ const isPublicEnpoint = (path) => {
     "api/products",
     "auth/social-login",
     "auth/login/google",
-    "api/chatbot/ask"
+    "api/chatbot/ask",
+    "auth/forgot/OTPRequest",
+    "auth/forgot/checkOTP",
+    "auth/forgot/reset"
   ].some(item => path.startsWith(item));
 };
 

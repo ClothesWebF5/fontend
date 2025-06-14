@@ -83,3 +83,17 @@ export const checkFavoriteExist = async() =>{
     const res = await get("api/favorite/exists");
     return res;
 }
+export const OTPRequest = async (email) => {
+    const res = await post("auth/forgot/OTPRequest", { email });
+    return res;
+    
+}
+export const checkOTP = async (email,otp) => {
+    const res = await post("auth/forgot/checkOTP", { email,otp });
+    return res;
+    
+}
+export const resetPassword = async (email, newPassword) => {
+    const res = await patch("auth/forgot/reset", { email, newPassword });
+    return res;
+}
