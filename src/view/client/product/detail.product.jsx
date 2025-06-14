@@ -15,7 +15,7 @@ import 'swiper/css/thumbs';
 
 
 // import required modules
-import { ExclamationCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -34,6 +34,7 @@ const ProductDetail = () => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const sizes = [...new Set(item.details?.map((detail) => detail.size.name))];
+    console.log(item);
     const colors = [
         ...new Map(
             item.details
@@ -73,7 +74,6 @@ const ProductDetail = () => {
         };
         dispatch(addCart(cartItem));
         if (action === "buy") {
-            console.log("OK");
             if (localStorage.getItem("accessToken")) {
                 navigate("/payment");
                 return;
@@ -100,7 +100,27 @@ const ProductDetail = () => {
                 placement: 'topRight',
             });
         } else {
-            notification(toast, "Thêm sản phẩm thành công", "success");
+             api.open({
+                message: (
+                    <div style={{ color: '#fff' }}>
+                        Thông báo
+                    </div>
+                ),
+                description: (
+                    <div style={{ color: '#fff' }}>
+                        Thêm sản phẩm thành công.
+                    </div>
+                ),
+                icon: <CheckCircleOutlined style={{ color: '#fff', fontSize: 20 }} />,
+                style: {
+                    backgroundColor: 'green', // đỏ tươi
+                    borderRadius: 8,
+                    padding: 16,
+                },
+                closeIcon: false,
+                duration: 1.5,
+                placement: 'topRight',
+            });
         }
     }
     useEffect(() => {
@@ -390,17 +410,14 @@ const ProductDetail = () => {
                     <div className="py-6">
                         {activeTab === "description" && (
                             <div className="prose max-w-none">
-                                <h3 className="text-lg font-semibold mb-3">Áo Thun Nữ Cao Cấp Premium Cotton</h3>
+                                <h3 className="text-lg font-semibold mb-3">{item.name}</h3>
                                 <p>
-                                    Chất liệu cotton cao cấp, mềm mại, thoáng khí và thấm hút mồ hôi tốt. Thiết kế đơn giản nhưng
-                                    thanh lịch, phù hợp với nhiều phong cách và dịp khác nhau.
+                                    {item.description}
                                 </p>
                                 <div className="grid grid-cols-2 gap-4 mt-4">
                                     <div className="bg-gray-50 p-4 rounded-lg">
                                         <h4 className="font-medium mb-2">Ưu điểm nổi bật</h4>
-                                        <ul className="list-disc pl-5 space-y-1 text-sm">
-                                            <li>Chất liệu Premium Cotton cao cấp</li>
-                                            <li>Thoáng khí, thấm hút mồ hôi tốt</li>
+                                        <ul className="list-disc pl-5 space-y-1 text-sm">    
                                             <li>Kháng khuẩn, an toàn cho da</li>
                                             <li>Form dáng chuẩn châu Á</li>
                                             <li>Màu sắc bền đẹp, không xù lông</li>
@@ -425,12 +442,8 @@ const ProductDetail = () => {
                                 <table className="min-w-full border border-gray-200">
                                     <tbody>
                                         <tr className="bg-gray-50">
-                                            <td className="py-2 px-4 border-b font-medium w-1/3">Thương hiệu</td>
-                                            <td className="py-2 px-4 border-b">Sure Fashion</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="py-2 px-4 border-b font-medium">Chất liệu</td>
-                                            <td className="py-2 px-4 border-b">100% Premium Cotton</td>
+                                            <td className="py-2 px-4 border-b font-medium w-1/3">Danh mục</td>
+                                            <td className="py-2 px-4 border-b">{item.category.name}</td>
                                         </tr>
                                         <tr className="bg-gray-50">
                                             <td className="py-2 px-4 border-b font-medium">Xuất xứ</td>
@@ -438,7 +451,7 @@ const ProductDetail = () => {
                                         </tr>
                                         <tr>
                                             <td className="py-2 px-4 border-b font-medium">Kiểu dáng</td>
-                                            <td className="py-2 px-4 border-b">Ôm nhẹ, cổ tròn</td>
+                                            <td className="py-2 px-4 border-b">Đẹp, phong cách hiện đại phù hợp với mọi lứa tuổi</td>
                                         </tr>
                                         <tr className="bg-gray-50">
                                             <td className="py-2 px-4 border-b font-medium">Phù hợp</td>

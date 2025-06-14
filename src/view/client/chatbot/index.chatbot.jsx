@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { sendQuestion } from '../../../services/Client/chatbot.service';
 
 export default function Chatbot() {
+    const chatbotRef = useRef(null);
     const [messages, setMessages] = useState([
         { role: 'bot', content: 'Xin chào! Tôi có thể giúp gì cho bạn?', timestamp: new Date() },
     ]);
@@ -10,7 +11,6 @@ export default function Chatbot() {
     const [isTyping, setIsTyping] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
-    console.log(messages);
 
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
@@ -47,7 +47,7 @@ export default function Chatbot() {
         setIsTyping(true);
 
         try {
-            const res = await sendQuestion({question});
+            const res = await sendQuestion({ question });
             const botMessage = {
                 role: 'bot',
                 content: res.data.result,
@@ -92,26 +92,52 @@ export default function Chatbot() {
         }
     }, [isChatOpen]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // event.target: lấy phần tử đã click
+            if (isChatOpen && chatbotRef.current && !chatbotRef.current.contains(event.target)) {
+                setIsChatOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isChatOpen]);
+
     return (
         <div className="fixed bottom-16 right-6 flex flex-col items-end z-50">
             {/* Chat button */}
             {!isChatOpen && (
                 <button
                     onClick={() => setIsChatOpen(true)}
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow-lg p-4 hover:shadow-xl transition-all duration-300 flex items-center"
+                    className="relative bg-gradient-to-r bg-[#00ADEF] text-white rounded-full shadow-lg p-4 hover:shadow-xl transition-all duration-300 flex items-center justify-center"
                 >
-                    <MessageCircle size={24} />
+                    {/* Hiệu ứng viền rung */}
                     {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        <span className="absolute inset-0 rounded-full animate-ping bg-[#00abefb4] opacity-75 z-0"></span>
+                    )}
+
+                    {/* Nội dung nút */}
+                    <div className="relative z-10 flex items-center">
+                        <MessageCircle size={24} />
+                    </div>
+
+                    {/* Badge số tin nhắn */}
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center z-20">
                             {unreadCount}
                         </span>
                     )}
                 </button>
+
             )}
 
             {/* Chat popup */}
             {isChatOpen && (
-                <div className="flex flex-col bg-white rounded-lg shadow-2xl w-80 sm:w-96 h-[500px] sm:h-128 overflow-hidden animate-fade-in-up">
+                <div
+                    ref={chatbotRef}
+                    className="flex flex-col bg-white rounded-lg shadow-2xl w-80 sm:w-96 h-[500px] sm:h-128 overflow-hidden animate-fade-in-up">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 flex justify-between items-center">
                         <div className="flex items-center">
@@ -143,17 +169,15 @@ export default function Chatbot() {
                                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`max-w-xs rounded-lg p-3 ${
-                                        message.role === 'user'
-                                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-br-none shadow-md'
-                                            : 'bg-white text-gray-800 rounded-bl-none shadow-md border border-gray-100'
-                                    }`}
+                                    className={`max-w-xs rounded-lg p-3 ${message.role === 'user'
+                                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-br-none shadow-md'
+                                        : 'bg-white text-gray-800 rounded-bl-none shadow-md border border-gray-100'
+                                        }`}
                                 >
                                     <p className="text-sm whitespace-pre-wrap" >{message.content}</p>
                                     <div
-                                        className={`text-xs mt-1 ${
-                                            message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
-                                        }`}
+                                        className={`text-xs mt-1 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                                            }`}
                                     >
                                         {formatTime(message.timestamp)}
                                     </div>
@@ -195,11 +219,10 @@ export default function Chatbot() {
                             <button
                                 onClick={handleSendMessage}
                                 disabled={inputValue.trim() === ''}
-                                className={`p-2 rounded-full ${
-                                    inputValue.trim() === ''
-                                        ? 'text-gray-400 cursor-not-allowed'
-                                        : 'text-blue-500 hover:bg-blue-100'
-                                } transition-colors`}
+                                className={`p-2 rounded-full ${inputValue.trim() === ''
+                                    ? 'text-gray-400 cursor-not-allowed'
+                                    : 'text-blue-500 hover:bg-blue-100'
+                                    } transition-colors`}
                             >
                                 <Send size={18} />
                             </button>

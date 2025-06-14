@@ -288,6 +288,8 @@ const AdminProductTable = ({ onEdit }) => {
                 const res = await listDiscountByProductId(selectedProduct.id);
                 if (res.status === 200) {
                   setSelectedPromotions(res.data.result);
+                }else if(res.status === 403){
+                  notification(toast, "Không có quyền thực hiện chức năng này");
                 }
               }}
             />
