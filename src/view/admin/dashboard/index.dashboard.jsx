@@ -2,15 +2,115 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 
 import { useTheme } from "../../../hooks/use-theme";
 
-import { overviewData, recentSalesData, topProducts } from "../../../constants";
+import { recentSalesData, topProducts } from "../../../constants";
 
 import { Footer } from "../../../components/layout/admin/footer/footer.admin";
 
 import { CreditCard, DollarSign, Package, PencilLine, Star, Trash, TrendingUp, Users } from "lucide-react";
 import { useSelector } from "react-redux";
+import { thongkeProduct, thongkeOrder, thongkeCustomers, thongkeRecent, thongkeTopOrder, thongkeTotalMonth } from "../../../services/admin/dashboard.jsx";
+import { useEffect, useState } from "react";
 
 const DashboardPage = () => {
     const { theme } = useTheme();
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalOrders, setTotalOrders] = useState(0);
+    const [totalCustomers, setTotalCustomers] = useState(0);
+    const [thongkeRecentSales, setThongkeRecentSales] = useState([]);
+    const [thongkeTopOrder1, setThongkeTopOrder1] = useState([]);
+
+    const [overviewData, setOverviewData] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await thongkeTotalMonth();
+            const data = res.data;
+
+            const fullYear = Array.from({ length: 12 }, (_, i) => {
+                const month = i + 1;
+                const found = data.find(item => item.month === month);
+                return {
+                    month, // dùng cho X-Axis
+                    total: found ? found.total_month : 0,
+                };
+            });
+
+            setOverviewData(fullYear);
+        };
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const tinhTotalProducts = async () => {
+            const responseTotalProducts = await thongkeProduct();
+            console.log("kq1:", responseTotalProducts);
+            setTotalProducts(responseTotalProducts.data);
+        }
+        tinhTotalProducts();
+
+
+
+    }, []);
+    useEffect(() => {
+        const tinhTotalOrder = async () => {
+            const responseTotalOrder = await thongkeOrder();
+            console.log("kq2:", responseTotalOrder);
+            setTotalOrders(responseTotalOrder.data);
+        }
+        tinhTotalOrder();
+
+
+
+    }, []);
+
+    useEffect(() => {
+        const tinhTotalCustomers = async () => {
+            const responseTotalCustomers = await thongkeCustomers();
+            console.log("kq3:", responseTotalCustomers);
+            setTotalCustomers(responseTotalCustomers.data);
+        }
+        tinhTotalCustomers();
+
+
+
+    }, []);
+
+    useEffect(() => {
+        const tinhRecentSales = async () => {
+            const responseRecentSales = await thongkeRecent();
+            console.log("kq4:", responseRecentSales);
+            setThongkeRecentSales(responseRecentSales.data);
+
+        }
+        tinhRecentSales();
+
+
+
+    }, []);
+
+
+    useEffect(() => {
+        const TopOrder = async () => {
+            const res = await thongkeTopOrder();
+            console.log("kq5:", res);
+            setThongkeTopOrder1(res.data);
+
+        }
+        TopOrder();
+
+
+
+    }, []);
+
+
+
+
+
+
+
+
+
+
     return (
         <div className="flex flex-col gap-y-4">
             <h1 className="title">Dashboard</h1>
@@ -23,7 +123,7 @@ const DashboardPage = () => {
                         <p className="card-title">Total Products</p>
                     </div>
                     <div className="card-body bg-slate-100 transition-colors dark:bg-slate-950">
-                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">25,154</p>
+                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">{totalProducts}</p>
                         <span className="flex w-fit items-center gap-x-2 rounded-full border border-blue-500 px-2 py-1 font-medium text-blue-500 dark:border-blue-600 dark:text-blue-600">
                             <TrendingUp size={18} />
                             25%
@@ -38,7 +138,7 @@ const DashboardPage = () => {
                         <p className="card-title">Total Paid Orders</p>
                     </div>
                     <div className="card-body bg-slate-100 transition-colors dark:bg-slate-950">
-                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">$16,000</p>
+                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">{totalOrders}</p>
                         <span className="flex w-fit items-center gap-x-2 rounded-full border border-blue-500 px-2 py-1 font-medium text-blue-500 dark:border-blue-600 dark:text-blue-600">
                             <TrendingUp size={18} />
                             12%
@@ -53,7 +153,7 @@ const DashboardPage = () => {
                         <p className="card-title">Total Customers</p>
                     </div>
                     <div className="card-body bg-slate-100 transition-colors dark:bg-slate-950">
-                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">15,400k</p>
+                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">{totalCustomers}</p>
                         <span className="flex w-fit items-center gap-x-2 rounded-full border border-blue-500 px-2 py-1 font-medium text-blue-500 dark:border-blue-600 dark:text-blue-600">
                             <TrendingUp size={18} />
                             15%
@@ -68,7 +168,7 @@ const DashboardPage = () => {
                         <p className="card-title">Sales</p>
                     </div>
                     <div className="card-body bg-slate-100 transition-colors dark:bg-slate-950">
-                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">12,340</p>
+                        <p className="text-3xl font-bold text-slate-900 transition-colors dark:text-slate-50">10</p>
                         <span className="flex w-fit items-center gap-x-2 rounded-full border border-blue-500 px-2 py-1 font-medium text-blue-500 dark:border-blue-600 dark:text-blue-600">
                             <TrendingUp size={18} />
                             19%
@@ -82,53 +182,35 @@ const DashboardPage = () => {
                         <p className="card-title">Overview</p>
                     </div>
                     <div className="card-body p-0">
-                        <ResponsiveContainer
-                            width="100%"
-                            height={300}
-                        >
+                        <ResponsiveContainer width="100%" minWidth={750} height={300}>
                             <AreaChart
                                 data={overviewData}
-                                margin={{
-                                    top: 0,
-                                    right: 0,
-                                    left: 0,
-                                    bottom: 0,
-                                }}
+                                margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
                             >
                                 <defs>
-                                    <linearGradient
-                                        id="colorTotal"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor="#2563eb"
-                                            stopOpacity={0.8}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor="#2563eb"
-                                            stopOpacity={0}
-                                        />
+                                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
+
                                 <Tooltip
                                     cursor={false}
-                                    formatter={(value) => `$${value}`}
+                                    formatter={(value) => `${value.toLocaleString()}VNĐ`}
+                                    labelFormatter={(label) => `Tháng ${label}`}
                                 />
 
+                                {/* Trục X = tháng (số từ 1-12) */}
                                 <XAxis
-                                    dataKey="name"
-                                    strokeWidth={0}
+                                    dataKey="month"
+                                    interval={0}
                                     stroke={theme === "light" ? "#475569" : "#94a3b8"}
                                     tickMargin={6}
                                 />
+
+                                {/* Trục Y = total (TotalPrice) */}
                                 <YAxis
                                     dataKey="total"
-                                    strokeWidth={0}
                                     stroke={theme === "light" ? "#475569" : "#94a3b8"}
                                     tickFormatter={(value) => `$${value}`}
                                     tickMargin={6}
@@ -150,14 +232,14 @@ const DashboardPage = () => {
                         <p className="card-title">Recent Sales</p>
                     </div>
                     <div className="card-body h-[300px] overflow-auto p-0">
-                        {recentSalesData.map((sale) => (
+                        {thongkeRecentSales.map((sale) => (
                             <div
-                                key={sale.id}
+                                key={sale}
                                 className="flex items-center justify-between gap-x-4 py-2 pr-2"
                             >
                                 <div className="flex items-center gap-x-4">
                                     <img
-                                        src={sale.image}
+                                        src={sale.src}
                                         alt={sale.name}
                                         className="size-10 flex-shrink-0 rounded-full object-cover"
                                     />
@@ -166,7 +248,7 @@ const DashboardPage = () => {
                                         <p className="text-sm text-slate-600 dark:text-slate-400">{sale.email}</p>
                                     </div>
                                 </div>
-                                <p className="font-medium text-slate-900 dark:text-slate-50">${sale.total}</p>
+                                <p className="font-medium text-slate-900 dark:text-slate-50">${sale.totalPrice}</p>
                             </div>
                         ))}
                     </div>
@@ -184,52 +266,32 @@ const DashboardPage = () => {
                                     <th className="table-head">#</th>
                                     <th className="table-head">Product</th>
                                     <th className="table-head">Price</th>
-                                    <th className="table-head">Status</th>
-                                    <th className="table-head">Rating</th>
-                                    <th className="table-head">Actions</th>
+                                    <th className="table-head">Sold_Count</th>
+
+
                                 </tr>
                             </thead>
                             <tbody className="table-body">
-                                {topProducts.map((product) => (
-                                    <tr
-                                        key={product.number}
-                                        className="table-row"
-                                    >
-                                        <td className="table-cell">{product.number}</td>
+                                {Array.isArray(thongkeTopOrder1) && thongkeTopOrder1.map((product, index) => (
+                                    <tr key={product.product_id || index} className="table-row">
+                                        <td className="table-cell">{index + 1}</td> {/* fix ở đây */}
                                         <td className="table-cell">
                                             <div className="flex w-max gap-x-4">
                                                 <img
-                                                    src={product.image}
+                                                    src={product.src}
                                                     alt={product.name}
                                                     className="size-14 rounded-lg object-cover"
                                                 />
                                                 <div className="flex flex-col">
                                                     <p>{product.name}</p>
-                                                    <p className="font-normal text-slate-600 dark:text-slate-400">{product.description}</p>
+                                                    <p className="font-normal text-slate-600 dark:text-slate-400">
+                                                        {product.description}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="table-cell">${product.price}</td>
-                                        <td className="table-cell">{product.status}</td>
-                                        <td className="table-cell">
-                                            <div className="flex items-center gap-x-2">
-                                                <Star
-                                                    size={18}
-                                                    className="fill-yellow-600 stroke-yellow-600"
-                                                />
-                                                {product.rating}
-                                            </div>
-                                        </td>
-                                        <td className="table-cell">
-                                            <div className="flex items-center gap-x-4">
-                                                <button className="text-blue-500 dark:text-blue-600">
-                                                    <PencilLine size={20} />
-                                                </button>
-                                                <button className="text-red-500">
-                                                    <Trash size={20} />
-                                                </button>
-                                            </div>
-                                        </td>
+                                        <td className="table-cell">{product.sold_count}</td>
                                     </tr>
                                 ))}
                             </tbody>

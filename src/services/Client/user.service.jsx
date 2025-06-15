@@ -97,3 +97,4 @@ export const resetPassword = async (email, newPassword) => {
     const res = await patch("auth/forgot/reset", { email, newPassword });
     return res;
 }
+
