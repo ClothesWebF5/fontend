@@ -9,7 +9,7 @@ import { addToFavorite, checkFavoriteExist, updateFavorite } from "../../../serv
 import { useSelector } from "react-redux";
 
 function CardProduct({ product }) {
-    
+
     const [hoveredCard, setHoveredCard] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
@@ -83,65 +83,69 @@ function CardProduct({ product }) {
             stock: selectedDetail.stock,
             quantity: 1
         };
-        dispatch(addCart(cartItem));
-        notification(toast, "Thêm sản phẩm thành công", "success");
+        if (cartItem.stock == 0) {
+            notification(toast, "Sản phẩm này đã hết hàng!");
+        } else {
+            dispatch(addCart(cartItem));
+            notification(toast, "Thêm sản phẩm thành công", "success");
+        }
     }
     const handleAddFavorite = (productId) => async () => {
         console.log("profile:", profile);
-        console.log("Thông tin product click: ",product);
+        console.log("Thông tin product click: ", product);
         console.log("Slug cua sản phẩm:", product.slug);
         const favoriteItem = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        slug: product.slug,
-        percent: discountPercent,
-        image: {
-            id: currentImage?.id,
-            src: currentImage?.src
-        },
-        color: {
-            id: selectedColor?.id,
-            name: selectedColor?.name,
-            hex: selectedColor?.hex
-        },
-        size: {
-            id: selectedDetail?.size.id,
-            name: selectedDetail?.size.name
-        },
-        stock: selectedDetail.stock,
-        quantity: 1
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            slug: product.slug,
+            percent: discountPercent,
+            image: {
+                id: currentImage?.id,
+                src: currentImage?.src
+            },
+            color: {
+                id: selectedColor?.id,
+                name: selectedColor?.name,
+                hex: selectedColor?.hex
+            },
+            size: {
+                id: selectedDetail?.size.id,
+                name: selectedDetail?.size.name
+            },
+            stock: selectedDetail.stock,
+            quantity: 1
+        };
+
+        dispatch(addFavorite(favoriteItem)); // Thêm vào redux
+
+        try {
+
+            setTimeout(async () => {
+                const updatedFavorites = JSON.parse(localStorage.getItem('favorite')) || [];
+                const res = await checkFavoriteExist();
+                console.log("Kiem tra xem da ton tai chua:", res.data);
+                if (res.data) {
+                    await updateFavorite(updatedFavorites);
+
+                } else {
+
+                    await addToFavorite([favoriteItem]);
+
+                }
+
+
+                notification(toast, "Thêm sản phẩm yêu thích thành công", "success");
+            }, 100);
+
+        } catch (error) {
+            console.error("Lỗi khi gửi lên backend:", error);
+            notification(toast, "Lỗi khi lưu sản phẩm yêu thích", "error");
+        }
     };
 
-    dispatch(addFavorite(favoriteItem)); // Thêm vào redux
-
-    try {
-    
-        setTimeout(async () => {
-            const updatedFavorites = JSON.parse(localStorage.getItem('favorite')) || [];
-            const res = await checkFavoriteExist();
-            console.log("Kiem tra xem da ton tai chua:", res.data);
-            if(res.data){
-                await updateFavorite(updatedFavorites);
-
-            }else{
-                 
-                 await addToFavorite([favoriteItem]);
-
-            }
-            
-           
-            notification(toast, "Thêm sản phẩm yêu thích thành công", "success");
-        }, 100);
-
-    } catch (error) {
-        console.error("Lỗi khi gửi lên backend:", error);
-        notification(toast, "Lỗi khi lưu sản phẩm yêu thích", "error");
-    }
-    };
 
 
-    
 
     return (
         <div
@@ -178,7 +182,7 @@ function CardProduct({ product }) {
                     </button>
                     <Link to={`/detail/${product.slug}`}>
                         <button
-                           
+
                             className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-75 ${hoveredCard === product.id
                                 ? "translate-x-0 opacity-100"
                                 : "translate-x-12 opacity-0"
@@ -187,14 +191,6 @@ function CardProduct({ product }) {
                             <Eye size={18} className="text-gray-600" />
                         </button>
                     </Link>
-                    <button
-                        className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-100 ${hoveredCard === product.id
-                            ? "translate-x-0 opacity-100"
-                            : "translate-x-12 opacity-0"
-                            }`}
-                    >
-                        <RefreshCwIcon size={18} className="text-gray-600" />
-                    </button>
                     <button
                         onClick={() => handleAddToCart(product.id)}
                         className={`p-2 bg-white rounded-full shadow-md transition-all duration-300 delay-150 ${hoveredCard === product.id

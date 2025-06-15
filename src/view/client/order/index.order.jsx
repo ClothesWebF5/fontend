@@ -10,7 +10,7 @@ const Order = () => {
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [addressData, setAddressData] = useState([]);
-
+    console.log(orders);
     const fetchApi = async () => {
         const res = await listOrder();
         if (res.status === 200) {
@@ -62,9 +62,9 @@ const Order = () => {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'Đang xử lý':
+            case 'Đang giao':
                 return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'Đã giao':
+            case 'Hoàn thành':
                 return 'bg-green-100 text-green-800 border-green-200';
             case 'Đã hủy':
                 return 'bg-red-100 text-red-800 border-red-200';
@@ -164,15 +164,19 @@ const Order = () => {
                                 <h2 className="text-xl font-semibold text-white">
                                     Chi tiết đơn hàng #{selectedOrder?.id || ""}
                                 </h2>
-                                <button
-                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    onClick={handleCancleOrder}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                    Hủy đơn hàng
-                                </button>
+                                {
+                                    selectedOrder?.status == "Chờ xác nhận" && (
+                                        <button button
+                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            onClick={handleCancleOrder}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            Hủy đơn hàng
+                                        </button>
+                                    )
+                                }
                             </div>
                             {selectedOrder && (
                                 <>
@@ -236,7 +240,9 @@ const Order = () => {
                                                     <span className="text-lg font-bold text-gray-900">
                                                         {formatCurrency(item.price)}
                                                     </span>
-                                                    <FeedbackModal product={item}/>
+                                                    {selectedOrder?.status == "Hoàn thành" && (
+                                                        <FeedbackModal product={item} />
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}
@@ -246,7 +252,7 @@ const Order = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
 
         </>
     );

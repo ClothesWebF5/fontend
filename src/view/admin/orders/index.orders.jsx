@@ -42,12 +42,16 @@ const OrdersAdmin = () => {
               <td className="px-4 py-2">{order.payment}</td>
               <td className="px-4 py-2">
                 <span className="block">{order.status}</span>
-                <button
-                  onClick={() => openStatusModal(order)}
-                  className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded shadow transition-all duration-200"
-                >
-                  Cập nhật
-                </button>
+                {
+                  order?.status != "Đã hủy" && (
+                    <button
+                      onClick={() => openStatusModal(order)}
+                      className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded shadow transition-all duration-200"
+                    >
+                      Cập nhật
+                    </button>
+                  )
+                }
 
               </td>
               <td className="px-4 py-2 text-right">
