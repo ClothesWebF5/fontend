@@ -43,7 +43,7 @@ const OrdersAdmin = () => {
               <td className="px-4 py-2">
                 <span className="block">{order.status}</span>
                 {
-                  order?.status != "Đã hủy" && (
+                  (order?.status != "Đã hủy" && order?.status != "Hoàn thành" ) && (
                     <button
                       onClick={() => openStatusModal(order)}
                       className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded shadow transition-all duration-200"

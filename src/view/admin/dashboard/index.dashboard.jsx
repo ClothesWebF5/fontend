@@ -2,14 +2,12 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 
 import { useTheme } from "../../../hooks/use-theme";
 
-import { recentSalesData, topProducts } from "../../../constants";
 
 import { Footer } from "../../../components/layout/admin/footer/footer.admin";
 
-import { CreditCard, DollarSign, Package, PencilLine, Star, Trash, TrendingUp, Users } from "lucide-react";
-import { useSelector } from "react-redux";
-import { thongkeProduct, thongkeOrder, thongkeCustomers, thongkeRecent, thongkeTopOrder, thongkeTotalMonth } from "../../../services/admin/dashboard.jsx";
+import { CreditCard, DollarSign, Package, TrendingUp, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import { thongkeCustomers, thongkeOrder, thongkeProduct, thongkeRecent, thongkeTopOrder, thongkeTotalMonth } from "../../../services/admin/dashboard.jsx";
 
 const DashboardPage = () => {
     const { theme } = useTheme();
@@ -182,7 +180,7 @@ const DashboardPage = () => {
                         <p className="card-title">Overview</p>
                     </div>
                     <div className="card-body p-0">
-                        <ResponsiveContainer width="100%" minWidth={750} height={300}>
+                        <ResponsiveContainer width="100%" minWidth={500} height={300}>
                             <AreaChart
                                 data={overviewData}
                                 margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
@@ -196,7 +194,7 @@ const DashboardPage = () => {
 
                                 <Tooltip
                                     cursor={false}
-                                    formatter={(value) => `${value.toLocaleString()}VNĐ`}
+                                    formatter={(value) => `${value.toLocaleString()}₫`}
                                     labelFormatter={(label) => `Tháng ${label}`}
                                 />
 
@@ -229,7 +227,7 @@ const DashboardPage = () => {
                 </div>
                 <div className="card col-span-1 md:col-span-2 lg:col-span-3">
                     <div className="card-header">
-                        <p className="card-title">Recent Sales</p>
+                        <p className="card-title"> Recent buyers</p>
                     </div>
                     <div className="card-body h-[300px] overflow-auto p-0">
                         {thongkeRecentSales.map((sale) => (
@@ -248,7 +246,7 @@ const DashboardPage = () => {
                                         <p className="text-sm text-slate-600 dark:text-slate-400">{sale.email}</p>
                                     </div>
                                 </div>
-                                <p className="font-medium text-slate-900 dark:text-slate-50">${sale.totalPrice}</p>
+                                <p className="font-medium text-slate-900 dark:text-slate-50">{sale.totalPrice.toLocaleString()}₫</p>
                             </div>
                         ))}
                     </div>
@@ -256,7 +254,7 @@ const DashboardPage = () => {
             </div>
             <div className="card">
                 <div className="card-header">
-                    <p className="card-title">Top Orders</p>
+                    <p className="card-title">Top Products</p>
                 </div>
                 <div className="card-body p-0">
                     <div className="relative h-[500px] w-full flex-shrink-0 overflow-auto rounded-none [scrollbar-width:_thin]">
@@ -290,7 +288,7 @@ const DashboardPage = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="table-cell">${product.price}</td>
+                                        <td className="table-cell">{product.price.toLocaleString()}₫</td>
                                         <td className="table-cell">{product.sold_count}</td>
                                     </tr>
                                 ))}
