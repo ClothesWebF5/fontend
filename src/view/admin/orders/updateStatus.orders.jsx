@@ -7,20 +7,26 @@ const UpdateStatus = ({ order, onClose, reload }) => {
   const [status, setStatus] = useState(order.status || "");
 
   const handleUpdate = async () => {
-  if (!status) {
-    notification(toast, "Vui lòng chọn trạng thái!");
-    return;
-  }
+    if (!status) {
+      notification(toast, "Vui lòng chọn trạng thái!");
+      return;
+    }
 
-  try {
-    await updateOrderStatus(order.id, status);
-    notification(toast, "Cập nhật trạng thái thành công!", "success");
-    reload();
-    onClose();
-  } catch (error) {
-    notification(toast, "Cập nhật trạng thái thất bại");
-  }
-};
+    try {
+      const res = await updateOrderStatus(order.id, status);
+      if (res.code == 403) {
+        notification(toast, "Không có quyền thực hiện chức năng này");
+      } else if (res.code == 500) {
+        notification(toast, res.message);
+      } else {
+        notification(toast, "Cập nhật trạng thái thành công!", "success");
+        reload();
+        onClose();
+      }
+    } catch (error) {
+      notification(toast, "Cập nhật trạng thái thất bại");
+    }
+  };
 
 
   return (

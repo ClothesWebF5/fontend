@@ -1,19 +1,24 @@
 import { Popover, Transition } from "@headlessui/react";
-import { Bell, ChevronDown, Heart, History, LogOut, Menu, Package, Search, Settings, ShoppingCart, User, UserRound, X } from "lucide-react";
+import { Bell, ChevronDown, Heart, LogOut, Menu, Package, Search, ShoppingCart, User, UserRound, X } from "lucide-react";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { findProductUser } from "../../../../helpers/findProductUser";
+import { getStompClient } from "../../../../helpers/stompClient";
+import { notification } from "../../../../helpers/toast";
 import RenderCategoryTree from "../../../../helpers/treeCategory.user";
 import { Introspect } from "../../../../hooks/introspect";
 import { ListCategory } from "../../../../hooks/listCategory";
 import { updateCart } from "../../../../services/Client/shopping.service";
 import { handleLogout } from "../../../../view/auth/logout";
 import { addCart, removeItem } from "../../../action/index.action";
-import { toast, ToastContainer } from "react-toastify";
-import { notification } from "../../../../helpers/toast";
+import ChatRoom from "../../../chatbox/index.chatbox";
+import OrderNotification from "../../../notification/order.notification";
 
 export default function Header({ headerRef }) {
+
+    const stompClient = getStompClient();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isFirstRun = useRef(true);
@@ -112,6 +117,7 @@ export default function Header({ headerRef }) {
             }
         }))
     }
+
     const isValid = Introspect();
     useEffect(() => {
         if (isFirstRun.current) {
@@ -125,8 +131,20 @@ export default function Header({ headerRef }) {
         }
         fetchApi();
     }, [cart]);
+
+    const handleUpdateStatus = () => {
+        if (stompClient.connected) {
+            stompClient.publish({
+                destination: "/app/notification/read-all",
+                body: JSON.stringify({ "userId": infor.id })
+            })
+        } else {
+            notification(toast, "WebSocket chưa được kết nối");
+        }
+    }
     return (
         <>
+            <OrderNotification />
             <header className="fixed top-0 left-0 w-full z-50 bg-white" ref={headerRef}>
                 <div className="border-b border-gray-100">
                     <div className="flex items-center justify-between px-4 md:px-6 py-4 max-w-7xl mx-auto">
@@ -141,7 +159,7 @@ export default function Header({ headerRef }) {
 
                         <div className="flex items-center">
                             <img
-                                
+
                                 src="https://pos.nvncdn.com/a135ac-81120/store/20200723_uouW5nbd4a4NIQY2BcD3tuMN.jpg"
                                 alt="Logo"
                                 className="h-8 md:h-10 w-full"
@@ -238,21 +256,21 @@ export default function Header({ headerRef }) {
                                 )}
                             </Popover>
 
-                            {/* {infor && (
+                            {infor && (
                                 <Popover className="relative hidden md:block">
                                     {({ open }) => (
                                         <>
-                                       
-                                        <Popover.Button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 focus:outline-none">
+
+                                            <Popover.Button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 focus:outline-none">
                                                 <div className="relative">
                                                     <Bell className="w-5 h-5" />
-                                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium">
-                                                        3
+                                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium">
+                                                        {infor.notifications.filter(item => item.status == 0).length}
                                                     </span>
                                                 </div>
                                             </Popover.Button>
-                                        
-                                            
+
+
                                             <Transition
                                                 as={Fragment}
                                                 enter="transition ease-out duration-200"
@@ -265,40 +283,40 @@ export default function Header({ headerRef }) {
                                                 <Popover.Panel className="absolute right-0 mt-2 w-80 rounded-md bg-white shadow-lg overflow-hidden z-50">
                                                     <div className="p-3 border-b border-gray-100 flex justify-between items-center">
                                                         <h3 className="font-medium">Thông báo</h3>
-                                                        <button className="text-xs text-blue-600 hover:underline">Đánh dấu đã đọc</button>
+                                                        <button
+                                                            onClick={handleUpdateStatus}
+                                                            className="text-xs text-blue-600 hover:underline">Đánh dấu đã đọc</button>
                                                     </div>
                                                     <div className="max-h-80 overflow-y-auto">
-                                                        <div className="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer flex items-start">
-                                                            <span className="w-2 h-2 mt-1.5 bg-blue-500 rounded-full mr-2 flex-shrink-0"></span>
-                                                            <div>
-                                                                <p className="text-sm">Đơn hàng #12345 của bạn đã được giao thành công.</p>
-                                                                <p className="text-xs text-gray-500 mt-1">2 giờ trước</p>
+                                                        {infor.notifications.length > 0 && infor.notifications.map(item => (
+                                                            <div className="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer flex items-start">
+                                                                {item.status ? (
+                                                                    <>
+                                                                        <span className="w-2 h-2 mt-1.5 bg-gray-500 rounded-full mr-2 flex-shrink-0"></span>
+                                                                        <div>
+                                                                            <p className="text-sm text-gray-400">{item.content}</p>
+                                                                            <p className="text-xs text-gray-400 mt-1">{item.timeAgo}</p>
+                                                                        </div>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <span className="w-2 h-2 mt-1.5 bg-blue-500 rounded-full mr-2 flex-shrink-0"></span>
+                                                                        <div>
+                                                                            <p className="text-sm text-gray-950">{item.content}</p>
+                                                                            <p className="text-xs text-gray-600 mt-1">{item.timeAgo}</p>
+                                                                        </div>
+                                                                    </>
+                                                                )}
                                                             </div>
-                                                        </div>
-                                                        <div className="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer flex items-start">
-                                                            <span className="w-2 h-2 mt-1.5 bg-blue-500 rounded-full mr-2 flex-shrink-0"></span>
-                                                            <div>
-                                                                <p className="text-sm">Sản phẩm yêu thích của bạn đang được giảm giá 20%.</p>
-                                                                <p className="text-xs text-gray-500 mt-1">Hôm qua</p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer flex items-start">
-                                                            <span className="w-2 h-2 mt-1.5 bg-blue-500 rounded-full mr-2 flex-shrink-0"></span>
-                                                            <div>
-                                                                <p className="text-sm">Chúng tôi vừa cập nhật chính sách giao hàng mới.</p>
-                                                                <p className="text-xs text-gray-500 mt-1">2 ngày trước</p>
-                                                            </div>
-                                                        </div>
+                                                        ))}
                                                     </div>
-                                                    <div className="p-3 text-center border-t border-gray-100">
-                                                        <a href="#" className="text-sm text-blue-600 hover:underline">Xem tất cả thông báo</a>
-                                                    </div>
+
                                                 </Popover.Panel>
                                             </Transition>
                                         </>
                                     )}
                                 </Popover>
-                            )} */}
+                            )}
 
                             <Popover className="relative">
                                 {({ open }) => (
@@ -405,11 +423,11 @@ export default function Header({ headerRef }) {
                                 )}
                             </Popover>
 
-                            <button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 hidden md:block" onClick={()=>navigate('/favorite')}>
-                                <Heart className="w-5 h-5" style={{position:'relative',top:'10px'}} />
+                            <button className="rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-200 hidden md:block" onClick={() => navigate('/favorite')}>
+                                <Heart className="w-5 h-5" style={{ position: 'relative', top: '10px' }} />
                                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold"
-                                 style={{position:'relative',top:'-24px',right:'-10px'}}>
-                                       {favorite.length}
+                                    style={{ position: 'relative', top: '-24px', right: '-10px' }}>
+                                    {favorite.length}
                                 </span>
                             </button>
 

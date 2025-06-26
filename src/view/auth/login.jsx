@@ -9,7 +9,7 @@ import { notification } from "../../helpers/toast";
 import { jwtDecode } from "jwt-decode";
 import { getProfile } from "../../services/auth/auth.service";
 import { useDispatch, useSelector } from "react-redux";
-import { createCart, infor as profile } from "../../components/action/index.action";
+import { createCart, creatFavorite, infor as profile } from "../../components/action/index.action";
 import { addToCart, getCart } from "../../services/Client/shopping.service";
 import { getFavorite } from "../../services/Client/user.service";
 function Login() {
@@ -62,10 +62,8 @@ function Login() {
                             }
                         }
                         const res2 = await addToFavorite(favorite);
-                        console.log("kkk: ", res2);
                         if (res2.status == 200) {
                             const getFavoriteUser = await getFavorite();
-                            console.log("jj:", getFavoriteUser);
                             if (getFavoriteUser.status == 200) {
                                 localStorage.setItem('favorite', JSON.stringify(getFavoriteUser.data.result));
                                 dispatch(creatFavorite(getFavoriteUser.data.result));

@@ -1,4 +1,4 @@
-import { Boxes, ChartColumn, CirclePlus, Folder, Home, KeyRound, NotepadText, Package, PackagePlus, Settings, ShieldCheck, ShoppingBag, UserCheck, UserPlus, Users } from "lucide-react";
+import { Boxes, ChartColumn, CirclePlus, Folder, HelpCircle, Home, KeyRound, NotepadText, Package, PackagePlus, Settings, ShieldCheck, ShoppingBag, UserCheck, UserPlus, Users } from "lucide-react";
 import {config} from "../config/index.config";
 import ProfileImage from "@/assets/profile-image.jpg";
 import ProductImage from "@/assets/product-image.jpg";
@@ -14,17 +14,7 @@ export const navbarLinks = [
                 label: "Dashboard",
                 icon: Home,
                 path: `${config.prefixAdmin}/dashboard`,
-            },
-            {
-                label: "Analytics",
-                icon: ChartColumn,
-                path: `${config.prefixAdmin}/analytics`,
-            },
-            {
-                label: "Reports",
-                icon: NotepadText,
-                path: `${config.prefixAdmin}/reports`,
-            },
+            }
         ],
     },
     {
@@ -73,16 +63,6 @@ export const navbarLinks = [
         ],
     },
     {
-        title: "Orders",
-        links: [
-            {
-                label: "Orders",
-                icon: Package,
-                path: `${config.prefixAdmin}/orders`,
-            }
-        ],
-    },
-    {
         title: "Roles",
         links: [
             {
@@ -98,12 +78,12 @@ export const navbarLinks = [
         ],
     },
     {
-        title: "Settings",
+        title: "Support",
         links: [
             {
-                label: "Settings",
-                icon: Settings,
-                path: "/settings",
+                label: "Support",
+                icon: HelpCircle,
+                path: `${config.prefixAdmin}/supports`,
             },
         ],
     },

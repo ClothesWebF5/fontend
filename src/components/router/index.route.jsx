@@ -28,6 +28,7 @@ import Favorite from "../../view/client/user/favorite.jsx";
 import Forgot from "../../view/auth/forgot.jsx";
 
 import PrivateClient from "../../components/auth/client.auth.jsx";
+import Support from "../../view/admin/support/index.support.jsx";
 
 
 export const router = [
@@ -139,8 +140,8 @@ export const router = [
                         element: <ListCategory />
                     },
                     {
-                        path: "settings",
-                        element: <h1 className="title">Settings</h1>,
+                        path: "supports",
+                        element: <Support/>
                     },
                     {
                         path: "new-product",

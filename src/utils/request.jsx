@@ -31,7 +31,7 @@ export const refreshToken = async () => {
   const token = localStorage.getItem("accessToken");
   if (!token) return null;
 
-  const res = await fetch(`${api}auth/refreshToken`, {
+  const res = await fetch(`${api}/auth/refreshToken`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
@@ -49,7 +49,7 @@ export const refreshToken = async () => {
 };
 
 const fetchWithAuthRetry = async (path, options = {}, retryCount = 1) => {
-  const fullUrl = `${api}${path}`;
+  const fullUrl = `${api}/${path}`;
 
   // Nếu không phải public endpoint, thêm Authorization
   if (!isPublicEnpoint(path)) {

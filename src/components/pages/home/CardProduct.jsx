@@ -91,9 +91,6 @@ function CardProduct({ product }) {
         }
     }
     const handleAddFavorite = (productId) => async () => {
-        console.log("profile:", profile);
-        console.log("Thông tin product click: ", product);
-        console.log("Slug cua sản phẩm:", product.slug);
         const favoriteItem = {
             id: product.id,
             name: product.name,
@@ -117,30 +114,32 @@ function CardProduct({ product }) {
             quantity: 1
         };
 
-        dispatch(addFavorite(favoriteItem)); // Thêm vào redux
+        if (favoriteItem.stock == 0) {
+            notification(toast, "Sản phẩm này đã hết hàng!");
+        } else {
+            dispatch(addFavorite(favoriteItem)); // Thêm vào redux
+            try {
 
-        try {
+                setTimeout(async () => {
+                    const updatedFavorites = JSON.parse(localStorage.getItem('favorite')) || [];
+                    const res = await checkFavoriteExist();
+                    if (res.data) {
+                        await updateFavorite(updatedFavorites);
 
-            setTimeout(async () => {
-                const updatedFavorites = JSON.parse(localStorage.getItem('favorite')) || [];
-                const res = await checkFavoriteExist();
-                console.log("Kiem tra xem da ton tai chua:", res.data);
-                if (res.data) {
-                    await updateFavorite(updatedFavorites);
+                    } else {
 
-                } else {
+                        await addToFavorite([favoriteItem]);
 
-                    await addToFavorite([favoriteItem]);
-
-                }
+                    }
 
 
-                notification(toast, "Thêm sản phẩm yêu thích thành công", "success");
-            }, 100);
+                    notification(toast, "Thêm sản phẩm yêu thích thành công", "success");
+                }, 100);
 
-        } catch (error) {
-            console.error("Lỗi khi gửi lên backend:", error);
-            notification(toast, "Lỗi khi lưu sản phẩm yêu thích", "error");
+            } catch (error) {
+                console.error("Lỗi khi gửi lên backend:", error);
+                notification(toast, "Lỗi khi lưu sản phẩm yêu thích", "error");
+            }
         }
     };
 
