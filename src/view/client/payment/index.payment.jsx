@@ -1,4 +1,4 @@
-import { MapPin, Phone, Plus, QrCode, Wallet } from 'lucide-react';
+import { CreditCard, MapPin, Phone, Plus, QrCode, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { infor as prof } from "../../../components/action/index.action";
@@ -64,11 +64,11 @@ const Payment = () => {
             description: 'Trả tiền mặt khi nhận hàng',
         },
         {
-            id: 'VNPAYQR',
-            name: 'Quét mã QR',
-            icon: QrCode,
-            description: 'Thanh toán nhanh bằng mã QR',
-        },
+            id: 'OTHER',
+            name: 'Khác',
+            icon: CreditCard,
+            description: 'Chọn phương thức thanh toán khác'
+        }
     ];
 
     const handlePayment = async () => {
@@ -103,6 +103,8 @@ const Payment = () => {
         }
     }
 
+    // https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=90000000&vnp_BankCode=VNBANK&vnp_Command=pay&vnp_CreateDate=20251217093728&vnp_CurrCode=VND&vnp_ExpireDate=20251217095228&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang%3A56418844&vnp_OrderType=other&vnp_ReturnUrl=http%3A%2F%2F103.130.212.219%2Fpayments%2Fcallback&vnp_TmnCode=CPY00000&vnp_TxnRef=56418844&vnp_Version=2.1.0&vnp_SecureHash=ABCDEFGH
+
     return (
         <>
             <ToastContainer position="top-center" autoClose={2000} pauseOnHover={false} />
@@ -131,7 +133,7 @@ const Payment = () => {
                                     </div>
 
                                     <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-                                        {profile.addresses.map((address, index) => (
+                                        {profile.addresses.map((address) => (
                                             <div
                                                 key={address.id}
                                                 className={`p-4 border rounded-lg cursor-pointer transition-all ${address.isDefault

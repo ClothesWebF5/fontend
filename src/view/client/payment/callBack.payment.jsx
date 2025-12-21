@@ -22,7 +22,7 @@ function PaymentCallback() {
             }else {
                 namePayment = "Thanh toán khi nhận hàng"
             }
-            if (vnpResponseCode == "00") {
+            if (vnpResponseCode == "00"){
                 const address = profile.addresses.find(item => item.isDefault);
                 const payment = {
                     code: vnpBankCode,
@@ -34,6 +34,8 @@ function PaymentCallback() {
                     dispatch(createCart([]));
                     navigate("/");
                 }
+            }else if (vnpResponseCode == "24"){
+                navigate("/payment");
             }
         }
         fetchApi();
